@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
 import toast from 'react-hot-toast';
-import { Plus, Trash2, Save, X, Calendar, TrendingUp } from 'lucide-react';
+import { Plus, Trash2, Save, X, Calendar, TrendingUp, Eye, BarChart3 } from 'lucide-react';
 
 interface FPO {
   fpo_id: number;
@@ -15,6 +15,14 @@ interface CommodityEntry {
   commodity: string;
   volume_tonnes: number;
   turnover: number;
+}
+
+interface AgriBusinessData {
+  commodity: string;
+  volume_tonnes: number;
+  turnover: number;
+  fy_month: string;
+  fy_year: string;
 }
 
 const COMMODITIES = ['Input', 'Cotton', 'Maize', 'Wheat', 'Rice', 'Soybean', 'Pulses', 'Vegetables', 'Fruits', 'Other'];
@@ -36,6 +44,11 @@ const Agribusiness: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [viewFPOList, setViewFPOList] = useState<FPO[]>([]);
+  const [selectedViewFPO, setSelectedViewFPO] = useState<FPO | null>(null);
+  const [agriData, setAgriData] = useState<AgriBusinessData[]>([]);
+  const [loadingViewData, setLoadingViewData] = useState(false);
+  const [loadingFPOList, setLoadingFPOList] = useState(false);
 
   const handleSubmitPeriod = async () => {
     if (!month || !fyYear) {
@@ -149,6 +162,56 @@ const Agribusiness: React.FC = () => {
     setEntries([{ commodity: '', volume_tonnes: 0, turnover: 0 }]);
     setMonth('');
     setFyYear('');
+  };
+
+  const loadFPOListForView = async () => {
+    setLoadingFPOList(true);
+    try {
+      const token = localStorage.getItem('token');
+      const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+      const response = await axios.get('http://localhost:5000/agri_business', { headers });
+      setViewFPOList(response.data);
+      toast.success('FPO list loaded');
+    } catch (error) {
+      console.error('Error fetching FPOs:', error);
+      toast.error('Failed to load FPO list');
+    } finally {
+      setLoadingFPOList(false);
+    }
+  };
+
+  const handleViewFPOSelect = async (fpo: FPO) => {
+    setSelectedViewFPO(fpo);
+    setLoadingViewData(true);
+    try {
+      const token = localStorage.getItem('token');
+      const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+      const response = await axios.get(`http://localhost:5000/agri_business/${fpo.fpo_id}`, { headers });
+      setAgriData(response.data);
+      toast.success(`Loaded data for ${fpo.name}`);
+    } catch (error) {
+      console.error('Error fetching agribusiness data:', error);
+      toast.error('Failed to load agribusiness data');
+      setAgriData([]);
+    } finally {
+      setLoadingViewData(false);
+    }
+  };
+
+  const groupDataByMonth = () => {
+    const grouped: { [key: string]: AgriBusinessData[] } = {};
+    agriData.forEach(item => {
+      const key = `${item.fy_month} ${item.fy_year}`;
+      if (!grouped[key]) {
+        grouped[key] = [];
+      }
+      grouped[key].push(item);
+    });
+    return grouped;
+  };
+
+  const calculateMonthTotal = (monthData: AgriBusinessData[]) => {
+    return monthData.reduce((sum, item) => sum + item.turnover, 0);
   };
 
   return (
@@ -432,6 +495,137 @@ const Agribusiness: React.FC = () => {
           </div>
         </div>
       )}
+
+      <div className="bg-gradient-to-br from-green-50 via-white to-blue-50 rounded-xl shadow-lg border border-green-100 overflow-hidden">
+        <div className="bg-gradient-to-r from-green-600 to-blue-600 px-6 py-4">
+          <div className="flex items-center space-x-3">
+            <div className="bg-white/20 backdrop-blur-sm p-2 rounded-lg">
+              <Eye className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-white">View Agribusiness Data</h2>
+              <p className="text-green-50 text-sm">Select an FPO to view their agribusiness records</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="p-6">
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <label className="block text-sm font-semibold text-gray-700 flex items-center space-x-2">
+                <BarChart3 className="w-4 h-4 text-green-600" />
+                <span>Select FPO</span>
+              </label>
+              {viewFPOList.length === 0 && (
+                <button
+                  onClick={loadFPOListForView}
+                  disabled={loadingFPOList}
+                  className="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors disabled:bg-gray-400"
+                >
+                  {loadingFPOList ? 'Loading...' : 'Load FPO List'}
+                </button>
+              )}
+            </div>
+
+            {viewFPOList.length > 0 && (
+              <div className="relative">
+                <select
+                  value={selectedViewFPO?.fpo_id || ''}
+                  onChange={(e) => {
+                    const fpo = viewFPOList.find(f => f.fpo_id === parseInt(e.target.value));
+                    if (fpo) handleViewFPOSelect(fpo);
+                  }}
+                  className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 appearance-none cursor-pointer hover:border-green-300"
+                >
+                  <option value="">Select FPO</option>
+                  {viewFPOList.map(fpo => (
+                    <option key={fpo.fpo_id} value={fpo.fpo_id}>{fpo.name}</option>
+                  ))}
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
+                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {loadingViewData && (
+            <div className="flex items-center justify-center py-12">
+              <div className="flex flex-col items-center space-y-3">
+                <svg className="animate-spin h-10 w-10 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <p className="text-gray-600 font-medium">Loading data...</p>
+              </div>
+            </div>
+          )}
+
+          {!loadingViewData && selectedViewFPO && agriData.length > 0 && (
+            <div className="space-y-6">
+              <div className="bg-green-50 border-l-4 border-green-600 p-4 rounded-r-lg">
+                <h3 className="font-semibold text-green-900 text-lg">{selectedViewFPO.name}</h3>
+                <p className="text-green-700 text-sm mt-1">Showing {agriData.length} records</p>
+              </div>
+
+              {Object.entries(groupDataByMonth()).map(([monthYear, monthData]) => {
+                const total = calculateMonthTotal(monthData);
+                return (
+                  <div key={monthYear} className="bg-white rounded-lg border-2 border-gray-200 overflow-hidden">
+                    <div className="bg-gradient-to-r from-green-500 to-blue-500 px-4 py-3">
+                      <h4 className="font-bold text-white text-lg">{monthYear}</h4>
+                    </div>
+
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead>
+                          <tr className="bg-gray-50 border-b-2 border-gray-200">
+                            <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Commodity</th>
+                            <th className="px-4 py-3 text-right text-sm font-semibold text-gray-700">Volume (Tonnes)</th>
+                            <th className="px-4 py-3 text-right text-sm font-semibold text-gray-700">Turnover (₹)</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {monthData.map((item, idx) => (
+                            <tr key={idx} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                              <td className="px-4 py-3 text-sm text-gray-900">{item.commodity}</td>
+                              <td className="px-4 py-3 text-sm text-gray-900 text-right">{item.volume_tonnes.toLocaleString()}</td>
+                              <td className="px-4 py-3 text-sm text-gray-900 text-right">₹{item.turnover.toLocaleString()}</td>
+                            </tr>
+                          ))}
+                          <tr className="bg-gradient-to-r from-green-100 to-blue-100 border-t-2 border-green-500">
+                            <td className="px-4 py-3 text-sm font-bold text-gray-900">Total Turnover</td>
+                            <td className="px-4 py-3"></td>
+                            <td className="px-4 py-3 text-sm font-bold text-gray-900 text-right">₹{total.toLocaleString()}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {!loadingViewData && selectedViewFPO && agriData.length === 0 && (
+            <div className="text-center py-12">
+              <BarChart3 className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">No Data Found</h3>
+              <p className="text-gray-600">No agribusiness records found for {selectedViewFPO.name}</p>
+            </div>
+          )}
+
+          {!loadingViewData && !selectedViewFPO && viewFPOList.length > 0 && (
+            <div className="text-center py-12">
+              <Eye className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Select an FPO</h3>
+              <p className="text-gray-600">Choose an FPO from the dropdown to view their data</p>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };
