@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
 import toast from 'react-hot-toast';
-import { Plus, Trash2, Save, X } from 'lucide-react';
+import { Plus, Trash2, Save, X, Calendar, TrendingUp } from 'lucide-react';
 
 interface FPO {
   fpo_id: number;
@@ -160,52 +160,131 @@ const Agribusiness: React.FC = () => {
         </div>
       </div>
 
-      <div className="card p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Select Period</h2>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Month
-            </label>
-            <select
-              value={month}
-              onChange={(e) => setMonth(e.target.value)}
-              className="input"
-              disabled={showModal}
-            >
-              <option value="">Select Month</option>
-              {MONTHS.map(m => (
-                <option key={m} value={m}>{m}</option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Financial Year
-            </label>
-            <select
-              value={fyYear}
-              onChange={(e) => setFyYear(e.target.value)}
-              className="input"
-              disabled={showModal}
-            >
-              <option value="">Select FY</option>
-              {generateFYYears().map(year => (
-                <option key={year} value={year}>{year}</option>
-              ))}
-            </select>
+      <div className="bg-gradient-to-br from-blue-50 via-white to-green-50 rounded-xl shadow-lg border border-blue-100 overflow-hidden">
+        <div className="bg-gradient-to-r from-blue-600 to-green-600 px-6 py-4">
+          <div className="flex items-center space-x-3">
+            <div className="bg-white/20 backdrop-blur-sm p-2 rounded-lg">
+              <Calendar className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-white">Select Period</h2>
+              <p className="text-blue-50 text-sm">Choose month and financial year to begin</p>
+            </div>
           </div>
         </div>
 
-        <button
-          onClick={handleSubmitPeriod}
-          disabled={loading || showModal}
-          className="btn-primary w-full md:w-auto"
-        >
-          {loading ? 'Loading...' : 'Load FPC'}
-        </button>
+        <div className="p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div className="relative">
+              <label className="block text-sm font-semibold text-gray-700 mb-3 flex items-center space-x-2">
+                <Calendar className="w-4 h-4 text-blue-600" />
+                <span>Month</span>
+              </label>
+              <div className="relative">
+                <select
+                  value={month}
+                  onChange={(e) => setMonth(e.target.value)}
+                  className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none cursor-pointer hover:border-blue-300 disabled:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-60"
+                  disabled={showModal}
+                >
+                  <option value="">Select Month</option>
+                  {MONTHS.map(m => (
+                    <option key={m} value={m}>{m}</option>
+                  ))}
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
+                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
+              {month && (
+                <div className="mt-2 flex items-center space-x-1 text-xs text-green-600">
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span className="font-medium">Selected</span>
+                </div>
+              )}
+            </div>
+
+            <div className="relative">
+              <label className="block text-sm font-semibold text-gray-700 mb-3 flex items-center space-x-2">
+                <TrendingUp className="w-4 h-4 text-green-600" />
+                <span>Financial Year</span>
+              </label>
+              <div className="relative">
+                <select
+                  value={fyYear}
+                  onChange={(e) => setFyYear(e.target.value)}
+                  className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 appearance-none cursor-pointer hover:border-green-300 disabled:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-60"
+                  disabled={showModal}
+                >
+                  <option value="">Select FY</option>
+                  {generateFYYears().map(year => (
+                    <option key={year} value={year}>{year}</option>
+                  ))}
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
+                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
+              {fyYear && (
+                <div className="mt-2 flex items-center space-x-1 text-xs text-green-600">
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span className="font-medium">Selected</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {month && fyYear && (
+            <div className="mb-6 p-4 bg-blue-50 border-l-4 border-blue-600 rounded-r-lg">
+              <div className="flex items-start space-x-3">
+                <div className="flex-shrink-0">
+                  <svg className="w-5 h-5 text-blue-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div>
+                  <h4 className="text-sm font-semibold text-blue-900">Period Selected</h4>
+                  <p className="text-sm text-blue-700 mt-1">
+                    You've selected <span className="font-bold">{month} {fyYear}</span>. Click the button below to load FPC data.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="flex justify-end">
+            <button
+              onClick={handleSubmitPeriod}
+              disabled={loading || showModal || !month || !fyYear}
+              className="group relative px-8 py-3 bg-gradient-to-r from-blue-600 to-green-600 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-green-700 disabled:from-gray-400 disabled:to-gray-400 disabled:cursor-not-allowed disabled:shadow-none transition-all duration-200 transform hover:scale-105 disabled:transform-none disabled:opacity-60"
+            >
+              <span className="flex items-center space-x-2">
+                {loading ? (
+                  <>
+                    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>Loading...</span>
+                  </>
+                ) : (
+                  <>
+                    <TrendingUp className="w-5 h-5" />
+                    <span>Load FPC</span>
+                  </>
+                )}
+              </span>
+            </button>
+          </div>
+        </div>
       </div>
 
       {showModal && (
