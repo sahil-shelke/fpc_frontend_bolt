@@ -5,8 +5,10 @@ import toast from 'react-hot-toast';
 import { Plus, Trash2, Save } from 'lucide-react';
 
 interface FPO {
-  id: number;
-  fpo_name: string;
+  fpo_id: number;
+  name: string;
+  state_code: number;
+  district_code: number;
 }
 
 interface CommodityEntry {
@@ -30,7 +32,7 @@ const Agribusiness: React.FC = () => {
   const [fpoList, setFpoList] = useState<FPO[]>([]);
   const [selectedFPO, setSelectedFPO] = useState<FPO | null>(null);
   const [entries, setEntries] = useState<CommodityEntry[]>([
-    { commodity: '', volume_tonnes: 0, turnover: 0 }
+    { commodity: '', volume_tonnes: 1, turnover: 1 }
   ]);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -48,6 +50,7 @@ const Agribusiness: React.FC = () => {
 
       const response = await axios.get('http://localhost:5000/agri_business', { headers });
       setFpoList(response.data);
+      console.log('Fetched FPOs:', response.data);
       setShowFPODropdown(true);
       toast.success('FPO list loaded successfully');
     } catch (error) {
@@ -60,7 +63,7 @@ const Agribusiness: React.FC = () => {
 
   const handleFPOSelect = (fpo: FPO) => {
     setSelectedFPO(fpo);
-    toast.success(`Selected: ${fpo.fpo_name}`);
+    toast.success(`Selected: ${fpo.name}`);
   };
 
   const addEntry = () => {
@@ -106,13 +109,15 @@ const Agribusiness: React.FC = () => {
       const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
 
       const promises = entries.map(entry =>
-        axios.post('http://localhost:5000/agribusiness', {
-          fpo_id: selectedFPO.id,
+        axios.post('http://localhost:5000/agri_business', {
+          fpo_id: selectedFPO.fpo_id,
+          state_code: selectedFPO.state_code,
+          district_code: selectedFPO.district_code,
           commodity: entry.commodity,
           volume_tonnes: entry.volume_tonnes,
           turnover: entry.turnover,
           fy_year: fyYear,
-          month: month
+          fy_month: month
         }, { headers })
       );
 
@@ -207,16 +212,16 @@ const Agribusiness: React.FC = () => {
               FPO Name
             </label>
             <select
-              value={selectedFPO?.id || ''}
+              value={selectedFPO?.fpo_id || ''}
               onChange={(e) => {
-                const fpo = fpoList.find(f => f.id === parseInt(e.target.value));
+                const fpo = fpoList.find(f => f.fpo_id === parseInt(e.target.value));
                 if (fpo) handleFPOSelect(fpo);
               }}
               className="input"
             >
               <option value="">Select FPO</option>
               {fpoList.map(fpo => (
-                <option key={fpo.id} value={fpo.id}>{fpo.fpo_name}</option>
+                <option key={fpo.fpo_id} value={fpo.fpo_id}>{fpo.name}</option>
               ))}
             </select>
           </div>
@@ -224,7 +229,7 @@ const Agribusiness: React.FC = () => {
           {selectedFPO && (
             <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
               <p className="text-sm text-blue-800">
-                <strong>Selected FPO:</strong> {selectedFPO.fpo_name}
+                <strong>Selected FPO:</strong> {selectedFPO.name}
               </p>
               <p className="text-sm text-blue-700">
                 Period: {month} {fyYear}
