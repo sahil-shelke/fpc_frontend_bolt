@@ -182,7 +182,7 @@ const RejectedFPOs: React.FC = () => {
                   <div className="flex-1">
                     <div className="flex items-center space-x-3 mb-3">
                       <Building2 className="h-6 w-6 text-red-600" />
-                      <h3 className="text-lg font-semibold text-gray-900">{fpo.fpo_name}</h3>
+                      <h3 className="text-lg font-semibold text-gray-900">{fpo.name}</h3>
                       <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
                         Rejected
                       </span>
