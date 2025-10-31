@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { X, Users, UserPlus, FileCheck, Heart, DollarSign, FileText, BookOpen } from 'lucide-react';
+import { X, Users, UserPlus, FileCheck, Heart, DollarSign, FileText, BookOpen, Building2 } from 'lucide-react';
+import FPOEditTab from './EditTabs/FPOEditTab';
 import ShareholdersEditTab from './EditTabs/ShareholdersEditTab';
 import StaffEditTab from './EditTabs/StaffEditTab';
 import ComplianceEditTab from './EditTabs/ComplianceEditTab';
@@ -15,14 +16,15 @@ interface EditModalProps {
   fpoName: string;
 }
 
-type TabType = 'shareholders' | 'staff' | 'compliance' | 'donors' | 'financial' | 'licenses' | 'trainings';
+type TabType = 'fpo' | 'shareholders' | 'staff' | 'compliance' | 'donors' | 'financial' | 'licenses' | 'trainings';
 
 const EditModal: React.FC<EditModalProps> = ({ isOpen, onClose, fpoId, fpoName }) => {
-  const [activeTab, setActiveTab] = useState<TabType>('shareholders');
+  const [activeTab, setActiveTab] = useState<TabType>('fpo');
 
   if (!isOpen) return null;
 
   const tabs = [
+    { id: 'fpo' as TabType, label: 'FPO Details', icon: Building2 },
     { id: 'shareholders' as TabType, label: 'Shareholders', icon: Users },
     { id: 'staff' as TabType, label: 'Staff', icon: UserPlus },
     { id: 'compliance' as TabType, label: 'Compliance', icon: FileCheck },
@@ -75,6 +77,7 @@ const EditModal: React.FC<EditModalProps> = ({ isOpen, onClose, fpoId, fpoName }
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-6">
+          {activeTab === 'fpo' && <FPOEditTab fpoId={fpoId} />}
           {activeTab === 'shareholders' && <ShareholdersEditTab fpoId={fpoId} />}
           {activeTab === 'staff' && <StaffEditTab fpoId={fpoId} />}
           {activeTab === 'compliance' && <ComplianceEditTab fpoId={fpoId} />}
