@@ -29,8 +29,8 @@ import AgribusinessOfficer from './pages/AgribusinessOfficer';
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
+    <Router>
+      <AuthProvider>
         <div className="min-h-screen bg-gray-50">
           <Toaster position="top-right" />
           <Routes>
@@ -61,8 +61,8 @@ function App() {
             </Route>
           </Routes>
         </div>
-      </Router>
-    </AuthProvider>
+      </AuthProvider>
+    </Router>
   );
 }
 
