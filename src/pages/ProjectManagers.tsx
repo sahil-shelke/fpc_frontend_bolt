@@ -32,6 +32,7 @@ const ProjectManagers: React.FC = () => {
   const [districts, setDistricts] = useState<District[]>([]);
   const [selectedState, setSelectedState] = useState('');
   const [selectedStateCode, setSelectedStateCode] = useState<number | null>(null);
+  const [originalData, setOriginalData] = useState<Partial<ProjectManagerData> | null>(null);
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<ProjectManagerData>({
     defaultValues: {
@@ -74,52 +75,79 @@ const ProjectManagers: React.FC = () => {
   };
 
   const onSubmit = async (data: ProjectManagerData) => {
-    setLoading(true);
-    try {
-      const token = localStorage.getItem('token');
-      const headers = {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      };
+  setLoading(true);
+  try {
+    const token = localStorage.getItem('token');
+    const headers = {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    };
 
     const finalData: ProjectManagerData = {
       ...data,
-      state_code: selectedStateCode,                   // state_code from dropdown
-     // district_code from input
+      state_code: selectedStateCode,
     };
 
-      if (editingPhone) {
-        await axios.put(`http://localhost:5000/pm/${editingPhone}`, finalData, { headers });
-        toast.success('Project Manager updated successfully!');
-        setEditingPhone(null);
-      } else {
-        await axios.post('http://localhost:5000/pm/', finalData, { headers });
-        toast.success('Project Manager created successfully!');
-      }
-
-      reset();
-      setShowForm(false);
-      fetchManagers();
-    } catch (error: any) {
-      toast.error(error.response?.data?.detail || 'Operation failed');
-    } finally {
-      setLoading(false);
+    // If editing, send only changed fields
+    let payloadToSend = finalData;
+    if (editingPhone && originalData) {
+      payloadToSend = Object.entries(finalData).reduce((acc, [key, value]) => {
+        const origValue = (originalData as any)[key];
+        if (value !== origValue && value !== '') acc[key] = value;
+        return acc;
+      }, {} as any);
     }
+
+    if (editingPhone) {
+      await axios.put(`http://localhost:5000/pm/${editingPhone}`, payloadToSend, { headers });
+      toast.success('Project Manager updated successfully!');
+      setEditingPhone(null);
+      setOriginalData(null);
+    } else {
+      await axios.post('http://localhost:5000/pm/', finalData, { headers });
+      toast.success('Project Manager created successfully!');
+    }
+
+    reset();
+    setShowForm(false);
+    fetchManagers();
+  } catch (error: any) {
+    toast.error(error.response?.data?.detail || 'Operation failed');
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+
+
+
+
+const handleEdit = (manager: any) => {
+  setEditingPhone(manager.phone_number);
+  console.log('Editing manager:', manager);
+  // Preload selected state and district
+  setSelectedStateCode(manager.state_code);
+  const selected = districts.find(d => d.state_code === manager.state_code);
+  setSelectedState(selected?.state_name || '');
+
+  // Save original data for diff tracking
+  const editableFields = {
+    phone_number: manager.phone_number,
+    first_name: manager.first_name,
+    last_name: manager.last_name,
+    email: manager.email,
+    state_code: manager.state_code,
+    district_code: manager.district_code,
+    role_id: 3
   };
+  setOriginalData(editableFields);
 
+  // Reset form with existing data
+  reset({ ...editableFields, password: '' });
+  setShowForm(true);
+};
 
-
-
-
-
-  const handleEdit = (manager: any) => {
-    setEditingPhone(manager.phone_number);
-    reset({
-      ...manager,
-      password: '' // Don't pre-fill password for security
-    });
-    setShowForm(true);
-  };
 
   const handleDelete = async (phone_number: string) => {
     if (window.confirm('Are you sure you want to delete this Project Manager?')) {
@@ -226,10 +254,10 @@ const ProjectManagers: React.FC = () => {
                     className="form-input"
                     placeholder="Enter 10-digit phone number"
                     maxLength={10}
-                    disabled={!!editingPhone}
+                    // disabled={!!editingPhone}
                   />
                   {errors.phone_number && <p className="text-red-500 text-sm mt-1">{errors.phone_number.message}</p>}
-                  {editingPhone && <p className="text-sm text-gray-500 mt-1">Phone number cannot be changed</p>}
+                  {/* {editingPhone && <p className="text-sm text-gray-500 mt-1">Phone number cannot be changed</p>} */}
                 </div>
 
                 <div>
@@ -278,19 +306,22 @@ const ProjectManagers: React.FC = () => {
                 <div>
                   <label className="form-label">State *</label>
                   <select
-                    {...register('state_code', { required: 'State is required' })}
                     className="form-input"
+                    {...register('state_code', { required: 'State is required', valueAsNumber: true })}
                     onChange={(e) => {
-                      const stateName = e.target.value;
-                      setSelectedState(stateName);
-                      const stateData = districts.find(d => d.state_name === stateName);
-                      setSelectedStateCode(stateData?.state_code || null);
+                      const code = parseInt(e.target.value);
+                      setSelectedStateCode(code);
+                      const selected = districts.find(d => d.state_code === code);
+                      setSelectedState(selected?.state_name || '');
                     }}
                   >
                     <option value="">Select State</option>
-                    {[...new Set(districts.map(d => d.state_name))].sort().map((state) => (
-                      <option key={state} value={state}>{state}</option>
-                    ))}
+                    {[...new Map(districts.map(d => [d.state_code, d.state_name]))]
+                      .map(([code, name]) => (
+                        <option key={code} value={code}>
+                          {name}
+                        </option>
+                      ))}
                   </select>
                   {errors.state_code && <p className="text-red-500 text-sm mt-1">{errors.state_code.message}</p>}
                 </div>

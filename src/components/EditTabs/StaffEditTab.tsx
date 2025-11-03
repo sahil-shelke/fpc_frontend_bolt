@@ -12,7 +12,7 @@ interface StaffFormData {
   degree_title?: string;
   date_of_joining: string;
   designation: 'ceo' | 'chairperson' | 'manager' | 'staff' | 'other';
-  DIN?: string;
+  din?: string;
   fpo_id: number;
 }
 
@@ -125,15 +125,17 @@ const StaffEditTab: React.FC<StaffEditTabProps> = ({ fpoId }) => {
           }
         });
 
-        if (Object.keys(changedFields).length === 0) {
-          toast('No changes to save');
-          handleCancelEdit();
-          return;
-        }
+// Always include fpo_id and phone_number
+changedFields.fpo_id = fpoId;
+changedFields.phone_number = data.phone_number;
 
-        changedFields.fpo_id = fpoId;
+// If no other changes except these defaults, still proceed
+if (Object.keys(changedFields).length <= 2) {
+  toast('No other changes, but default fields sent');
+}
 
-        await axios.patch(
+
+        await axios.put(
           `http://localhost:5000/staff/${editingPhone}`,
           changedFields,
           {
@@ -269,7 +271,7 @@ const StaffEditTab: React.FC<StaffEditTabProps> = ({ fpoId }) => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">DIN</label>
-                <input {...register('DIN')} className="form-input w-full" />
+                <input {...register('din')} className="form-input w-full" />
               </div>
             </div>
 
@@ -387,7 +389,7 @@ const StaffEditTab: React.FC<StaffEditTabProps> = ({ fpoId }) => {
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">DIN</label>
-                      <input {...register('DIN')} className="form-input w-full" />
+                      <input {...register('din')} className="form-input w-full" />
                     </div>
                   </div>
 
@@ -455,10 +457,10 @@ const StaffEditTab: React.FC<StaffEditTabProps> = ({ fpoId }) => {
                           : 'N/A'}
                       </p>
                     </div>
-                    {staff.DIN && (
+                    {staff.din && (
                       <div>
                         <p className="text-gray-500">DIN</p>
-                        <p className="font-medium text-gray-900">{staff.DIN}</p>
+                        <p className="font-medium text-gray-900">{staff.din}</p>
                       </div>
                     )}
                   </div>

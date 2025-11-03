@@ -14,18 +14,17 @@ const DONOR_TYPES = [
   "Others"
 ];
 
-interface DonorItem {
+interface DonorFormData {
+  fpo_id: number;
   donor_type: string;
   donor_name: string;
 }
 
-interface DonorFormData {
-  fpo_id: number;
-  fpo_donor: DonorItem[];
-}
-
-interface Donor extends DonorFormData {
+interface Donor {
   id: number;
+  fpo_id: number;
+  donor_type: string;
+  donor_name: string;
   fpo_name?: string;
 }
 
@@ -37,20 +36,15 @@ const DonorEditTab: React.FC<DonorEditTabProps> = ({ fpoId }) => {
   const [donors, setDonors] = useState<Donor[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [originalData, setOriginalData] = useState<Donor | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { register, handleSubmit, reset, control, formState: { errors, dirtyFields } } = useForm<DonorFormData>({
+  const { register, handleSubmit, reset, formState: { errors } } = useForm<DonorFormData>({
     defaultValues: {
       fpo_id: fpoId,
-      fpo_donor: [{ donor_type: 'Government', donor_name: '' }]
+      donor_type: 'Government',
+      donor_name: ''
     }
-  });
-
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: 'fpo_donor'
   });
 
   useEffect(() => {
@@ -61,7 +55,7 @@ const DonorEditTab: React.FC<DonorEditTabProps> = ({ fpoId }) => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`http://localhost:5000/donors/${fpoId}`, {
+      const response = await axios.get(`http://localhost:5000/donor/${fpoId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       setDonors(response.data || []);
@@ -77,27 +71,30 @@ const DonorEditTab: React.FC<DonorEditTabProps> = ({ fpoId }) => {
 
   const handleEdit = (donor: Donor) => {
     setEditingId(donor.id);
-    setOriginalData(donor);
-    reset(donor);
+    reset({
+      fpo_id: donor.fpo_id,
+      donor_type: donor.donor_type,
+      donor_name: donor.donor_name
+    });
   };
 
   const handleCancelEdit = () => {
     setEditingId(null);
-    setOriginalData(null);
     setShowAddForm(false);
     reset({
       fpo_id: fpoId,
-      fpo_donor: [{ donor_type: 'Government', donor_name: '' }]
+      donor_type: 'Government',
+      donor_name: ''
     });
   };
 
   const handleAddNew = () => {
     setEditingId(null);
-    setOriginalData(null);
     setShowAddForm(true);
     reset({
       fpo_id: fpoId,
-      fpo_donor: [{ donor_type: 'Government', donor_name: '' }]
+      donor_type: 'Government',
+      donor_name: ''
     });
   };
 
@@ -109,7 +106,7 @@ const DonorEditTab: React.FC<DonorEditTabProps> = ({ fpoId }) => {
 
       if (showAddForm) {
         await axios.post(
-          'http://localhost:5000/donors/',
+          'http://localhost:5000/donor/',
           data,
           {
             headers: { 'Authorization': `Bearer ${token}` }
@@ -118,7 +115,7 @@ const DonorEditTab: React.FC<DonorEditTabProps> = ({ fpoId }) => {
         toast.success('Donor record created successfully!');
       } else if (editingId) {
         await axios.put(
-          `http://localhost:5000/donors/${editingId}`,
+          `http://localhost:5000/donor/${editingId}`,
           data,
           {
             headers: { 'Authorization': `Bearer ${token}` }
@@ -148,53 +145,34 @@ const DonorEditTab: React.FC<DonorEditTabProps> = ({ fpoId }) => {
   const renderForm = () => (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <label className="block text-sm font-medium text-gray-700">
-            Donors <span className="text-red-500">*</span>
-          </label>
-          <button
-            type="button"
-            onClick={() => append({ donor_type: 'Government', donor_name: '' })}
-            className="text-sm text-primary-600 hover:text-primary-900 flex items-center"
-          >
-            <Plus className="h-4 w-4 mr-1" />
-            Add Donor
-          </button>
-        </div>
+        <label className="block text-sm font-medium text-gray-700">
+          Donor Type <span className="text-red-500">*</span>
+        </label>
+        <select
+          {...register('donor_type', { required: true })}
+          className="form-input w-full"
+        >
+          {DONOR_TYPES.map(type => (
+            <option key={type} value={type}>{type}</option>
+          ))}
+        </select>
+        {errors.donor_type && (
+          <p className="text-xs text-red-600 mt-1">Donor type is required</p>
+        )}
+      </div>
 
-        {fields.map((field, index) => (
-          <div key={field.id} className="flex gap-3 items-start">
-            <div className="flex-1">
-              <select
-                {...register(`fpo_donor.${index}.donor_type` as const, { required: true })}
-                className="form-input w-full"
-              >
-                {DONOR_TYPES.map(type => (
-                  <option key={type} value={type}>{type}</option>
-                ))}
-              </select>
-            </div>
-            <div className="flex-1">
-              <input
-                {...register(`fpo_donor.${index}.donor_name` as const, { required: 'Donor name is required' })}
-                className="form-input w-full"
-                placeholder="Donor name"
-              />
-              {errors.fpo_donor?.[index]?.donor_name && (
-                <p className="text-xs text-red-600 mt-1">{errors.fpo_donor[index]?.donor_name?.message}</p>
-              )}
-            </div>
-            {fields.length > 1 && (
-              <button
-                type="button"
-                onClick={() => remove(index)}
-                className="px-2 py-2 text-red-600 hover:text-red-900"
-              >
-                <Trash2 className="h-4 w-4" />
-              </button>
-            )}
-          </div>
-        ))}
+      <div className="space-y-3">
+        <label className="block text-sm font-medium text-gray-700">
+          Donor Name <span className="text-red-500">*</span>
+        </label>
+        <input
+          {...register('donor_name', { required: 'Donor name is required' })}
+          className="form-input w-full"
+          placeholder="Enter donor name"
+        />
+        {errors.donor_name && (
+          <p className="text-xs text-red-600 mt-1">{errors.donor_name.message}</p>
+        )}
       </div>
 
       <div className="flex space-x-2 pt-4 border-t">
@@ -267,14 +245,12 @@ const DonorEditTab: React.FC<DonorEditTabProps> = ({ fpoId }) => {
                   </div>
 
                   <div className="space-y-2">
-                    {donor.fpo_donor.map((item, index) => (
-                      <div key={index} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                        <span className="inline-flex px-3 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                          {item.donor_type}
-                        </span>
-                        <span className="font-medium text-gray-900">{item.donor_name}</span>
-                      </div>
-                    ))}
+                    <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                      <span className="inline-flex px-3 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                        {donor.donor_type}
+                      </span>
+                      <span className="font-medium text-gray-900">{donor.donor_name}</span>
+                    </div>
                   </div>
                 </div>
               )}

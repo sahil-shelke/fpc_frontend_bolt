@@ -33,6 +33,7 @@ const AgribusinessOfficers: React.FC = () => {
   const [districts, setDistricts] = useState<District[]>([]);
   const [selectedState, setSelectedState] = useState('');
   const [selectedStateCode, setSelectedStateCode] = useState<number | null>(null);
+  const [originalData, setOriginalData] = useState<Partial<AgribusinessOfficerData> | null>(null);
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<AgribusinessOfficerData>({
     defaultValues: {
@@ -48,7 +49,7 @@ const AgribusinessOfficers: React.FC = () => {
   const fetchOfficers = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/pm/', {
+      const response = await axios.get('http://localhost:5000/agri_business/agri_business_officers', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -74,53 +75,87 @@ const AgribusinessOfficers: React.FC = () => {
     }
   };
 
-  const onSubmit = async (data: AgribusinessOfficerData) => {
-    setLoading(true);
-    try {
-      const token = localStorage.getItem('token');
-      const headers = {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      };
+const onSubmit = async (data: AgribusinessOfficerData) => {
+  setLoading(true);
+  try {
+    const token = localStorage.getItem('token');
+    const headers = {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    };
 
     const finalData: AgribusinessOfficerData = {
       ...data,
-      state_code: selectedStateCode,                   // state_code from dropdown
-     // district_code from input
+      state_code: selectedStateCode,
     };
 
-      if (editingPhone) {
-        await axios.put(`http://localhost:5000/pm/${editingPhone}`, finalData, { headers });
-        toast.success('Project Manager updated successfully!');
-        setEditingPhone(null);
-      } else {
-        await axios.post('http://localhost:5000/pm/', finalData, { headers });
-        toast.success('Project Manager created successfully!');
-      }
+    let payloadToSend = finalData;
 
-      reset();
-      setShowForm(false);
-      fetchOfficers();
-    } catch (error: any) {
-      toast.error(error.response?.data?.detail || 'Operation failed');
-    } finally {
-      setLoading(false);
+    // When editing → send only changed fields + phone_number
+    if (editingPhone && originalData) {
+      payloadToSend = Object.entries(finalData).reduce((acc, [key, value]) => {
+        const origValue = (originalData as any)[key];
+        if (value !== origValue && value !== '') {
+          acc[key] = value;
+        }
+        return acc;
+      }, {} as any);
+
+      payloadToSend.phone_number = editingPhone; // always send phone number
     }
+
+    if (editingPhone) {
+      await axios.put(`http://localhost:5000/agri_business/${editingPhone}`, payloadToSend, { headers });
+      toast.success('Agribusiness Officer updated successfully!');
+      setEditingPhone(null);
+      setOriginalData(null);
+    } else {
+      await axios.post('http://localhost:5000/agri_business/create_agri_business_officer', finalData, { headers });
+      toast.success('Agribusiness Officer created successfully!');
+    }
+
+    reset();
+    setShowForm(false);
+    fetchOfficers();
+  } catch (error: any) {
+    toast.error(error.response?.data?.detail || 'Operation failed');
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+
+
+
+const handleEdit = (officer: any) => {
+  setEditingPhone(officer.phone_number);
+
+  // Set selected state and district
+  setSelectedState(officer.statename);
+  const selectedDistrict = districts.find(d => d.district_name === officer.districtname);
+  setSelectedStateCode(selectedDistrict?.state_code || null);
+
+  // Save original data for diff tracking
+  const editableFields = {
+    phone_number: officer.phone_number,
+    first_name: officer.first_name,
+    last_name: officer.last_name,
+    email: officer.email,
+    state_code: selectedDistrict?.state_code || null,
+    district_code: selectedDistrict?.district_code || null,
+    role_id: 5
   };
+  setOriginalData(editableFields);
 
+  reset({
+    ...editableFields,
+    password: ''
+  });
 
+  setShowForm(true);
+};
 
-
-
-
-  const handleEdit = (officer: any) => {
-    setEditingPhone(officer.phone_number);
-    reset({
-      ...officer,
-      password: '' // Don't pre-fill password for security
-    });
-    setShowForm(true);
-  };
 
   const handleDelete = async (phone_number: string) => {
     if (window.confirm('Are you sure you want to delete this Agribusiness Officer?')) {
@@ -155,13 +190,13 @@ const AgribusinessOfficers: React.FC = () => {
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3">
           <Users className="h-8 w-8 text-primary-600" />
-          <h1 className="text-2xl font-bold text-gray-900">Project Managers</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Agri Business Officer</h1>
         </div>
         <button
           onClick={() => {
             setShowForm(true);
             setEditingPhone(null);
-            reset({ role_id: 3 });
+            reset({ role_id: 5 });
           }}
           className="btn-primary flex items-center space-x-2"
         >
@@ -279,19 +314,22 @@ const AgribusinessOfficers: React.FC = () => {
                 <div>
                   <label className="form-label">State *</label>
                   <select
-                    {...register('state_code', { required: 'State is required' })}
                     className="form-input"
+                    {...register('state_code', { required: 'State is required', valueAsNumber: true })}
                     onChange={(e) => {
-                      const stateName = e.target.value;
-                      setSelectedState(stateName);
-                      const stateData = districts.find(d => d.state_name === stateName);
-                      setSelectedStateCode(stateData?.state_code || null);
+                      const code = parseInt(e.target.value);
+                      setSelectedStateCode(code);
+                      const selected = districts.find(d => d.state_code === code);
+                      setSelectedState(selected?.state_name || '');
                     }}
                   >
                     <option value="">Select State</option>
-                    {[...new Set(districts.map(d => d.state_name))].sort().map((state) => (
-                      <option key={state} value={state}>{state}</option>
-                    ))}
+                    {[...new Map(districts.map(d => [d.state_code, d.state_name]))]
+                      .map(([code, name]) => (
+                        <option key={code} value={code}>
+                          {name}
+                        </option>
+                      ))}
                   </select>
                   {errors.state_code && <p className="text-red-500 text-sm mt-1">{errors.state_code.message}</p>}
                 </div>
@@ -299,13 +337,13 @@ const AgribusinessOfficers: React.FC = () => {
                 <div>
                   <label className="form-label">District *</label>
                   <select
-                    {...register('district_code', { required: 'District is required' })}
+                    {...register('district_code', { required: 'District is required', valueAsNumber: true })}
                     className="form-input"
-                    disabled={!selectedState}
+                    disabled={!selectedStateCode}
                   >
                     <option value="">Select District</option>
                     {districts
-                      .filter(d => d.state_name === selectedState)
+                      .filter(d => d.state_code === selectedStateCode)
                       .map((district) => (
                         <option key={district.district_code} value={district.district_code.toString()}>
                           {district.district_name}
@@ -315,7 +353,7 @@ const AgribusinessOfficers: React.FC = () => {
                   {errors.district_code && <p className="text-red-500 text-sm mt-1">{errors.district_code.message}</p>}
                 </div>
 
-                <input type="hidden" {...register('role_id')} value={3} />
+                <input type="hidden" {...register('role_id')} value={5} />
               </div>
 
               <div className="flex justify-end space-x-4 pt-6 border-t">

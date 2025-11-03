@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 interface User {
   id: string;
@@ -43,6 +44,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsAuthenticated(false);
     }
   }, [token]);
+
+
+  useEffect(() => {
+  const interceptor = axios.interceptors.response.use(
+    response => response,
+    error => {
+      if (error.response?.status === 401) {
+        logout();
+        toast.error('Session expired. Please log in again.');
+      }
+      return Promise.reject(error);
+    }
+  );
+
+  return () => {
+    axios.interceptors.response.eject(interceptor);
+  };
+}, []);
+
+
+
+
 
   const login = async (email: string, password: string) => {
     try {
@@ -110,3 +133,4 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     </AuthContext.Provider>
   );
 };
+

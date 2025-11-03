@@ -33,7 +33,6 @@ const Sidebar: React.FC = () => {
         { name: 'Approval Requests', href: '/approvals', icon: CheckSquare, roles: ['super_admin'] },
         { name: 'Regional Managers', href: '/regional-managers', icon: Users, roles: ['super_admin'] },
         { name: 'Project Managers', href: '/project-managers', icon: Users, roles: ['super_admin'] },
-        { name: 'System Settings', href: '/settings', icon: Settings, roles: ['super_admin'] },
         { name: 'Agribusiness Officers', href: '/agribusiness-officer', icon: Users, roles: ['agribusiness_officer'] },
 
       ];
@@ -46,7 +45,6 @@ const Sidebar: React.FC = () => {
         { name: 'My FPCs', href: '/my-requests', icon: ClipboardList, roles: ['regional_manager'] },
         { name: 'Pending Requests', href: '/pending-requests', icon: Clock, roles: ['regional_manager'] },
         { name: 'Rejected FPOs', href: '/rejected-fpos', icon: XCircle, roles: ['regional_manager'] },
-        { name: 'Manage FPCs', href: '/manage-fpcs', icon: Building2, roles: ['regional_manager'] },
         { name: 'Project Managers', href: '/project-managers', icon: Users, roles: ['regional_manager'] },
       ];
     }

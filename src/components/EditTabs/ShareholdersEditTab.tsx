@@ -16,10 +16,10 @@ interface ShareholderFormData {
   status_of_member?: string;
   land_holding_of_shares_in_acres?: number;
   share_transfer?: string;
-  position_of_member: 'Director' | 'Promoter' | 'Member';
+  position_of_member?: 'Director' | 'Promoter' | 'Member';
   is_scst?: boolean;
   education_qualification?: 'illiterate' | 'secondary' | 'higher secondary' | 'diploma' | 'graduate' | 'postgraduate' | 'others';
-  DIN?: number;
+  din?: number;
   date_of_joining?: string;
 }
 
@@ -132,15 +132,15 @@ const ShareholdersEditTab: React.FC<ShareholdersEditTabProps> = ({ fpoId }) => {
           }
         });
 
-        if (Object.keys(changedFields).length === 0) {
-          toast('No changes to save');
-          handleCancelEdit();
-          return;
-        }
-
         changedFields.fpo_id = fpoId;
+changedFields.position_of_member = data.position_of_member;
 
-        await axios.patch(
+// If no other changes except these defaults, still proceed
+if (Object.keys(changedFields).length <= 2) {
+  toast('No other changes, but default fields sent');
+}
+
+        await axios.put(
           `http://localhost:5000/shareholder/${editingId}`,
           changedFields,
           {
@@ -306,7 +306,7 @@ const ShareholdersEditTab: React.FC<ShareholdersEditTabProps> = ({ fpoId }) => {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">DIN</label>
-                    <input type="number" {...register('DIN')} className="form-input w-full" />
+                    <input type="number" {...register('din')} className="form-input w-full" />
                   </div>
 
                   <div>
@@ -461,7 +461,7 @@ const ShareholdersEditTab: React.FC<ShareholdersEditTabProps> = ({ fpoId }) => {
 
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">DIN</label>
-                          <input type="number" {...register('DIN')} className="form-input w-full" />
+                          <input type="number" {...register('din')} className="form-input w-full" />
                         </div>
 
                         <div>

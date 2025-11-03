@@ -49,7 +49,7 @@ const LicenseForm: React.FC = () => {
 
   const fetchLicenses = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/licenses/$q{fpo_id}');
+      const response = await axios.get(`http://localhost:5000/licenses/${fpo_id}`);
       setLicenses(response.data);
     } catch (error) {
       toast.error('Failed to fetch licenses');
@@ -67,7 +67,8 @@ const LicenseForm: React.FC = () => {
         license_expiry: data.license_expiry || null,
         other_category_name: data.category === 'other' ? data.other_category_name : null
       };
-
+      console.log('Updated License ID:', editingId);
+      
       if (editingId) {
         await axios.put(`http://localhost:5000/licenses/${editingId}`, processedData);
         toast.success('License updated successfully!');
@@ -148,7 +149,6 @@ const LicenseForm: React.FC = () => {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium">FPO ID</th>
                 <th className="px-6 py-3 text-left text-xs font-medium">Category</th>
                 <th className="px-6 py-3 text-left text-xs font-medium">License Number</th>
                 <th className="px-6 py-3 text-left text-xs font-medium">Issue Date</th>
@@ -159,7 +159,6 @@ const LicenseForm: React.FC = () => {
             <tbody className="bg-white divide-y divide-gray-200">
               {licenses.map((license) => (
                 <tr key={license.id}>
-                  <td className="px-6 py-4">{license.fpo_id}</td>
                   <td className="px-6 py-4">
                     {license.category === 'other'
                       ? license.other_category_name
@@ -187,9 +186,15 @@ const LicenseForm: React.FC = () => {
               <h2 className="text-xl font-bold">{editingId ? 'Edit License' : 'Add New License'}</h2>
               <button onClick={() => setIsModalOpen(false)} className="text-gray-500 hover:text-gray-700">✕</button>
             </div>
+
+
+
+
+
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
+
+                {/* <div>
                   <label className="form-label">FPO *</label>
                   <select {...register('fpo_id', { required: 'FPO selection is required' })} className="form-input">
                     <option value="">Select FPO</option>
@@ -198,7 +203,16 @@ const LicenseForm: React.FC = () => {
                     ))}
                   </select>
                   {errors.fpo_id && <p className="text-red-500 text-sm">{errors.fpo_id.message}</p>}
+                </div> */}
+
+
+
+
+                <div>
+                  <label className="form-label">FPO Name *</label>
+                  <div>{fpos[0]?.fpo_name || 'N/A'}</div>
                 </div>
+
 
                 <div>
                   <label className="form-label">License Category *</label>

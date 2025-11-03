@@ -144,7 +144,7 @@ const LicenseEditTab: React.FC<LicenseEditTabProps> = ({ fpoId }) => {
 
         changedFields.fpo_id = fpoId;
 
-        await axios.patch(
+        await axios.put(
           `http://localhost:5000/licenses/${editingId}`,
           changedFields,
           {

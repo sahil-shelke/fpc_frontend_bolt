@@ -54,6 +54,7 @@ const ComplianceForm: React.FC = () => {
     try {
       const response = await axios.get(`http://localhost:5000/fpc_compliance/${fpo_id}`);
       setCompliances(response.data);
+      console.log('Fetched compliances:', response.data);
     } catch (error) {
       toast.error('Failed to fetch compliance details');
     }
@@ -64,7 +65,7 @@ const ComplianceForm: React.FC = () => {
     setLoading(true);
     try {
       if (editingId) {
-        await axios.put(`http://localhost:5000/fpc_compliance/${data.fpo_id}`, data);
+        await axios.put(`http://localhost:5000/fpc_compliance/${editingId}`, data);
         toast.success('Compliance details updated successfully!');
         setEditingId(null);
       } else {
@@ -82,7 +83,7 @@ const ComplianceForm: React.FC = () => {
   };
 
   const handleEdit = (compliance: any) => {
-    setEditingId(compliance.fpo_id);
+    setEditingId(compliance.id);
     reset(compliance);
     setIsModalOpen(true);
   };
@@ -158,7 +159,6 @@ const ComplianceForm: React.FC = () => {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">FPO ID</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">FY Year</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Period</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Audit Report</th>
@@ -169,7 +169,6 @@ const ComplianceForm: React.FC = () => {
             <tbody className="bg-white divide-y divide-gray-200">
               {compliances.map((compliance) => (
                 <tr key={compliance.id}>
-                  <td className="px-6 py-4">{compliance.fpo_id}</td>
                   <td className="px-6 py-4">{compliance.fy_year}</td>
                   <td className="px-6 py-4">{compliance.semiannual === 'h1' ? 'H1' : 'H2'}</td>
                   <td className="px-6 py-4">
@@ -207,22 +206,11 @@ const ComplianceForm: React.FC = () => {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               {/* Basic Info */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div>
-                  <label className="form-label">FPO *</label>
-                  <select
-                    {...register('fpo_id', { required: 'FPO selection is required' })}
-                    className="form-input"
-                    disabled={!!editingId}
-                  >
-                    <option value="">Select FPO</option>
-                    {fpos.map((fpo) => (
-                      <option key={fpo.fpo_id} value={fpo.fpo_id}>
-                        {fpo.fpo_name}
-                      </option>
-                    ))}
-                  </select>
-                  {errors.fpo_id && <p className="text-red-500 text-sm">{errors.fpo_id.message}</p>}
+                                <div>
+                  <label className="form-label">FPO Name *</label>
+                  <div>{fpos[0]?.fpo_name || 'N/A'}</div>
                 </div>
+
 
                 <div>
                   <label className="form-label">Financial Year *</label>

@@ -55,7 +55,7 @@ const FinancialEditTab: React.FC<FinancialEditTabProps> = ({ fpoId }) => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`http://localhost:5000/financial_details/fpo/${fpoId}`, {
+      const response = await axios.get(`http://localhost:5000/financial_details/${fpoId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       setFinancials(response.data || []);
@@ -143,7 +143,7 @@ const FinancialEditTab: React.FC<FinancialEditTabProps> = ({ fpoId }) => {
 
         changedFields.fpo_id = fpoId;
 
-        await axios.patch(
+        await axios.put(
           `http://localhost:5000/financial_details/${editingId}`,
           changedFields,
           {

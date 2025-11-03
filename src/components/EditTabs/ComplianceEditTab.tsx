@@ -149,7 +149,7 @@ const ComplianceEditTab: React.FC<ComplianceEditTabProps> = ({ fpoId }) => {
 
         changedFields.fpo_id = fpoId;
 
-        await axios.patch(
+        await axios.put(
           `http://localhost:5000/fpc_compliance/${editingId}`,
           changedFields,
           {

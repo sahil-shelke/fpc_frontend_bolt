@@ -20,7 +20,7 @@ interface ShareholderFormData {
   position_of_member: 'Director' | 'Promoter' | 'Member';
   is_scst?: boolean;
   education_qualification?: 'illiterate' | 'secondary' | 'higher secondary' | 'diploma' | 'graduate' | 'postgraduate' | 'others';
-  DIN?: number;
+  din?: number;
   date_of_joining?: string;
 }
 
@@ -92,7 +92,7 @@ const ShareholdersPage: React.FC = () => {
       if (data.position_of_member !== 'Director') {
         data.date_of_joining = undefined;
         data.education_qualification = undefined;
-        data.DIN = undefined;
+        data.din = undefined;
       }
 
       if (editingId) {
@@ -274,21 +274,11 @@ const ShareholdersPage: React.FC = () => {
               <div className="space-y-4">
                 <h3 className="text-lg font-medium text-gray-900 border-b pb-2">Basic Information</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="form-label">FPO *</label>
-                    <select
-                      {...register('fpo_id', { required: 'FPO selection is required' })}
-                      className="form-input"
-                    >
-                      <option value="">Select FPO</option>
-                      {fpos.map((fpo) => (
-                        <option key={fpo.fpo_id} value={fpo.fpo_id}>
-                          {fpo.fpo_name}
-                        </option>
-                      ))}
-                    </select>
-                    {errors.fpo_id && <p className="text-red-500 text-sm mt-1">{errors.fpo_id.message}</p>}
-                  </div>
+                                 <div>
+                  <label className="form-label">FPO Name *</label>
+                  <div>{fpos[0]?.fpo_name || 'N/A'}</div>
+                </div>
+
 
                   <div>
                     <label className="form-label">Member Name *</label>
@@ -401,13 +391,13 @@ const ShareholdersPage: React.FC = () => {
                       <label className="form-label">DIN *</label>
                       <input
                         type="number"
-                        {...register('DIN', { 
-                          required: selectedPosition === 'Director' ? 'DIN is required for Directors' : false 
+                        {...register('din', { 
+                          required: selectedPosition === 'Director' ? 'din is required for Directors' : false 
                         })}
                         className="form-input"
-                        placeholder="Enter DIN"
+                        placeholder="Enter din"
                       />
-                      {errors.DIN && <p className="text-red-500 text-sm mt-1">{errors.DIN.message}</p>}
+                      {errors.din && <p className="text-red-500 text-sm mt-1">{errors.din.message}</p>}
                     </div>
                   </div>
                 </div>

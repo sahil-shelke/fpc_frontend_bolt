@@ -7,8 +7,8 @@ import { CheckCircle, XCircle, Eye, Clock, FileText, User, Building2 } from 'luc
 interface PendingFPO {
   fpo_id: number;
   fpo_name: string;
-  state: string;
-  district: string;
+  state_name: string;
+  district_name: string;
   fpc_registration_number: string;
   pan: string;
   tan: string;
@@ -102,12 +102,12 @@ const ApprovalRequests: React.FC = () => {
   };
 
   const filteredRequests = requests.filter(request => {
-    const matchesState = filterState === '' || request.state === filterState;
-    const matchesDistrict = filterDistrict === '' || request.district.toLowerCase().includes(filterDistrict.toLowerCase());
+    const matchesState = filterState === '' || request.state_name === filterState;
+    const matchesDistrict = filterDistrict === '' || request.district_name.toLowerCase().includes(filterDistrict.toLowerCase());
     return matchesState && matchesDistrict;
   });
 
-  const uniqueStates = [...new Set(requests.map(request => request.state))].sort();
+  const uniqueStates = [...new Set(requests.map(request => request.state_name))].sort();
 
   if (loading) {
     return (
@@ -184,7 +184,7 @@ const ApprovalRequests: React.FC = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
                     <div>
                       <p className="text-sm text-gray-500">Location</p>
-                      <p className="font-medium">{request.district}, {request.state}</p>
+                      <p className="font-medium">{request.district_name}, {request.state_name}</p>
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">Registration Number</p>
@@ -229,6 +229,7 @@ const ApprovalRequests: React.FC = () => {
                     onClick={() => {
                       setSelectedRequest(request);
                       setShowModal(true);
+                      console.log('Selected Request:', request);
                     }}
                     className="btn-secondary flex items-center space-x-1"
                   >
@@ -269,7 +270,7 @@ const ApprovalRequests: React.FC = () => {
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Location</p>
-                    <p className="font-medium">{selectedRequest.district}, {selectedRequest.state}</p>
+                    <p className="font-medium">{selectedRequest.district_name}, {selectedRequest.state_name}</p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Registration Number</p>

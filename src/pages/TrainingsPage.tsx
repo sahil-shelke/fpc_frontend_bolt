@@ -89,7 +89,7 @@ const TrainingsPage: React.FC = () => {
   const fetchTrainings = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/training/', {
+      const response = await axios.get(`http://localhost:5000/training/fpo/${fpo_id}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -309,9 +309,6 @@ const TrainingsPage: React.FC = () => {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    FPC Name
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Training Name
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -328,11 +325,6 @@ const TrainingsPage: React.FC = () => {
               <tbody className="bg-white divide-y divide-gray-200">
                 {trainings.map((training) => (
                   <tr key={training.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">
-                        {fpos.find(f => f.fpo_id === training.fpo_id)?.name || 'N/A'}
-                      </div>
-                    </td>
                     <td className="px-6 py-4">
                       <div className="text-sm text-gray-900">{training.training_name}</div>
                       {training.training_needed_on && (
@@ -410,25 +402,11 @@ const TrainingsPage: React.FC = () => {
 
             <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6">
               {/* FPO Selection */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Select FPC <span className="text-red-500">*</span>
-                </label>
-                <select
-                  {...register('fpo_id', { required: 'FPC is required' })}
-                  className="form-input"
-                >
-                  <option value="">Select FPC</option>
-                  {fpos.map(fpo => (
-                    <option key={fpo.fpo_id} value={fpo.fpo_id}>
-                      {fpo.fpo_name}
-                    </option>
-                  ))}
-                </select>
-                {errors.fpo_id && (
-                  <p className="mt-1 text-sm text-red-600">{errors.fpo_id.message}</p>
-                )}
-              </div>
+                <div>
+                  <label className="form-label">FPO Name *</label>
+                  <div>{fpos[0]?.fpo_name || 'N/A'}</div>
+                </div>
+
 
               {/* Training Details */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

@@ -23,6 +23,14 @@ interface Stats {
   totalFinancialRecords?: number;
 }
 
+interface AnnualAgriStats {
+  name: string;
+  fpo_id: number;
+  input_commodity_total: number;
+  output_commodity_total: number;
+  total_turnover: number;
+}
+
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
   const [stats, setStats] = useState<Stats>({
@@ -36,10 +44,55 @@ const Dashboard: React.FC = () => {
     totalFinancialRecords: 0
   });
   const [loading, setLoading] = useState(true);
+  const [annualStats, setAnnualStats] = useState<AnnualAgriStats[]>([]);
+  const [selectedYear, setSelectedYear] = useState<string>('');
+  const [loadingAnnualStats, setLoadingAnnualStats] = useState(false);
 
   useEffect(() => {
     fetchDashboardStats();
+    if (user?.role === 'agribusiness_officer') {
+      const currentYear = new Date().getFullYear();
+      const defaultYear = `${currentYear}-${(currentYear + 1).toString()}`;
+      setSelectedYear(defaultYear);
+    }
   }, [user]);
+
+  useEffect(() => {
+    if (user?.role === 'agribusiness_officer' && selectedYear) {
+      fetchAnnualAgriStats(selectedYear);
+    }
+  }, [selectedYear, user]);
+
+  const generateFYYears = () => {
+    const years = [];
+    const currentYear = new Date().getFullYear();
+    for (let i = 0; i < 10; i++) {
+      const startYear = currentYear - i;
+      const endYear = startYear + 1;
+      years.push(`${startYear}-${endYear.toString()}`);
+    }
+    return years;
+  };
+
+const fetchAnnualAgriStats = async (year: string) => {
+  setLoadingAnnualStats(true);
+  try {
+    const token = localStorage.getItem('token');
+    const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+    const response = await axios.get(`http://localhost:5000/dashboard/agri_business_annual_stats/`, {
+      headers,
+      params: { fy_year: year }
+    });
+    setAnnualStats(response.data);
+  } catch (error) {
+    console.error('Error fetching annual agribusiness stats:', error);
+    toast.error('Failed to load annual statistics');
+    setAnnualStats([]);
+  } finally {
+    setLoadingAnnualStats(false);
+  }
+};
+
 
   const fetchDashboardStats = async () => {
     try {
@@ -192,6 +245,15 @@ const Dashboard: React.FC = () => {
     return baseCards;
   };
 
+  const calculateTotals = () => {
+    const totals = annualStats.reduce((acc, item) => ({
+      input_commodity_total: acc.input_commodity_total + item.input_commodity_total,
+      output_commodity_total: acc.output_commodity_total + item.output_commodity_total,
+      total_turnover: acc.total_turnover + item.total_turnover
+    }), { input_commodity_total: 0, output_commodity_total: 0, total_turnover: 0 });
+    return totals;
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -318,6 +380,68 @@ const Dashboard: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Annual Agribusiness Statistics for Agribusiness Officers */}
+      {user?.role === 'agribusiness_officer' && (
+        <div className="card p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-lg font-semibold text-gray-900">Annual Agribusiness Statistics</h2>
+            <div className="flex items-center space-x-3">
+              <label className="text-sm font-medium text-gray-700">Financial Year:</label>
+              <select
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(e.target.value)}
+                className="px-4 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+              >
+                {generateFYYears().map(year => (
+                  <option key={year} value={year}>{year}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {loadingAnnualStats ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary-600"></div>
+            </div>
+          ) : annualStats.length === 0 ? (
+            <div className="text-center py-12">
+              <TrendingUp className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">No Data Available</h3>
+              <p className="text-gray-600">No agribusiness statistics found for {selectedYear}</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="min-w-full border-collapse">
+                <thead>
+                  <tr className="bg-gray-100">
+                    <th className="px-4 py-3 text-left text-sm font-bold text-gray-900 border border-gray-300">FPO Name</th>
+                    <th className="px-4 py-3 text-right text-sm font-bold text-gray-900 border border-gray-300">Input</th>
+                    <th className="px-4 py-3 text-right text-sm font-bold text-gray-900 border border-gray-300">Output</th>
+                    <th className="px-4 py-3 text-right text-sm font-bold text-gray-900 border border-gray-300">Total Turnover</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {annualStats.map((item, idx) => (
+                    <tr key={item.fpo_id} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                      <td className="px-4 py-3 text-sm font-medium text-gray-900 border border-gray-300">{item.name}</td>
+                      <td className="px-4 py-3 text-sm text-gray-900 text-right border border-gray-300">{item.input_commodity_total.toLocaleString()}</td>
+                      <td className="px-4 py-3 text-sm text-gray-900 text-right border border-gray-300">{item.output_commodity_total.toLocaleString()}</td>
+                      <td className="px-4 py-3 text-sm text-gray-900 text-right border border-gray-300">{item.total_turnover.toLocaleString()}</td>
+                    </tr>
+                  ))}
+                  <tr className="bg-blue-100 font-bold">
+                    <td className="px-4 py-3 text-sm text-gray-900 border border-gray-300">Percent Total</td>
+                    <td className="px-4 py-3 text-sm text-gray-900 text-right border border-gray-300">{calculateTotals().input_commodity_total.toLocaleString()}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900 text-right border border-gray-300">{calculateTotals().output_commodity_total.toLocaleString()}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900 text-right border border-gray-300">{calculateTotals().total_turnover.toLocaleString()}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Recent Activity */}
       <div className="card p-6">

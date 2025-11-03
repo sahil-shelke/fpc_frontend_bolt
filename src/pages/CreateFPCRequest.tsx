@@ -28,6 +28,7 @@ interface CreateFPCRequestData {
   bod_date_of_joining: string;
   bod_qualification: string;
   address: string;
+  bod_DIN:string
 }
 
 interface ProjectManager {
@@ -126,8 +127,17 @@ const CreateFPCRequest: React.FC = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
+      console.log('Form data to submit:', data);
       
       // Prepare the payload according to the API schema
+      const bod_details={
+        mobile_number: data.bod_phone_number,
+        name: data.bod_name,
+        gender:data.bod_gender,
+        education_qualification: data.bod_qualification,
+        din: data.bod_DIN,
+        address: data.address
+      }
       const payload = {
         name: data.name,
         state_code: data.state_code,
@@ -145,22 +155,10 @@ const CreateFPCRequest: React.FC = () => {
         office_contact_email: data.office_contact_email,
         responsible_wotr_staff_phone: data.responsible_wotr_staff_phone,
         project_manager_phone: data.project_manager_phone,
-        is_approved: false, // New FPCs are not approved by default
-        donors: [],
-        bod_details: [{
-          mobile_number: data.bod_phone_number,
-          fpo_id: 0, // Will be set by backend
-          name: data.bod_name,
-          gender: data.bod_gender,
-          education_qualification: data.bod_qualification || "",
-          DIN: 10000000, // Default value, will be updated later
-          address: data.address || "",
-          date_of_joining: data.bod_date_of_joining || null
-        }]
+        bod_details: bod_details
       };
 
       console.log('Sending payload:', payload);
-      console.log('State code:', data.state_code, 'District code:', data.district_code);
 
       const response = await fetch('http://localhost:5000/fpo/', {
         method: 'POST',
@@ -356,6 +354,15 @@ const CreateFPCRequest: React.FC = () => {
                   placeholder="Enter address"
                 />
               </div>
+              
+             <div>
+                <label className="form-label">DIN</label>
+                <input
+                  {...register('bod_DIN')}
+                  className="form-input"
+                  placeholder="Enter DIN"
+                />
+              </div>
             </div>
           </div>
 
@@ -499,7 +506,7 @@ const CreateFPCRequest: React.FC = () => {
                 <input
                   {...register('pan', { 
                     required: 'PAN is required',
-                    pattern: { value: /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, message: 'Invalid PAN format' }
+                    // pattern: { value: /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, message: 'Invalid PAN format' }
                   })}
                   className="form-input"
                   placeholder="Enter PAN number"
@@ -527,7 +534,7 @@ const CreateFPCRequest: React.FC = () => {
                 <input
                   {...register('gst_number', { 
                     required: 'GST number is required',
-                    pattern: { value: /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/, message: 'Invalid GST format' }
+                    // pattern: { value: /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/, message: 'Invalid GST format' }
                   })}
                   className="form-input"
                   placeholder="Enter GST number"

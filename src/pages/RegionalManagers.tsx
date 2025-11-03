@@ -34,6 +34,7 @@ const RegionalManagers: React.FC = () => {
   const [districts, setDistricts] = useState<District[]>([]);
   const [selectedState, setSelectedState] = useState('');
   const [selectedStateCode, setSelectedStateCode] = useState<number | null>(null);
+  const [originalData, setOriginalData] = useState<Partial<RegionalManagerData> | null>(null);
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<RegionalManagerData>({
     defaultValues: {
@@ -89,13 +90,24 @@ const onSubmit = async (data: RegionalManagerData) => {
 
     const finalData: RegionalManagerData = {
       ...data,
-      state_code: selectedStateCode,                   // state_code from dropdown
+      state_code: selectedStateCode,
     };
 
+    // If editing, send only changed fields
+    let payloadToSend = finalData;
+    if (editingPhone && originalData) {
+      payloadToSend = Object.entries(finalData).reduce((acc, [key, value]) => {
+        const origValue = (originalData as any)[key];
+        if (value !== origValue && value !== '') acc[key] = value;
+        return acc;
+      }, {} as any);
+    }
+
     if (editingPhone) {
-      await axios.put(`http://localhost:5000/rm/${editingPhone}`, finalData, { headers });
+      await axios.put(`http://localhost:5000/rm/${editingPhone}`, payloadToSend, { headers });
       toast.success('Regional Manager updated successfully!');
       setEditingPhone(null);
+      setOriginalData(null);
     } else {
       await axios.post('http://localhost:5000/rm/', finalData, { headers });
       toast.success('Regional Manager created successfully!');
@@ -116,14 +128,32 @@ const onSubmit = async (data: RegionalManagerData) => {
 
 
 
-  const handleEdit = (manager: any) => {
-    setEditingPhone(manager.phone_number);
-    reset({
-      ...manager,
-      password: '' // Don't pre-fill password for security
-    });
-    setShowForm(true);
+const handleEdit = (manager: any) => {
+  setEditingPhone(manager.phone_number);
+  console.log('Editing manager:', manager);
+  // Preload selected state and district
+  setSelectedStateCode(manager.state_code);
+  const selected = districts.find(d => d.state_code === manager.state_code);
+  setSelectedState(selected?.state_name || '');
+
+  // Save original data for diff tracking
+  const editableFields = {
+    phone_number: manager.phone_number,
+    first_name: manager.first_name,
+    last_name: manager.last_name,
+    email: manager.email,
+    state_code: manager.state_code,
+    district_code: manager.district_code,
+    role_id: 2
   };
+  setOriginalData(editableFields);
+
+  // Reset form with existing data
+  reset({ ...editableFields, password: '' });
+  setShowForm(true);
+};
+
+
 
   const handleDelete = async (phone_number: string) => {
     if (window.confirm('Are you sure you want to delete this Regional Manager?')) {
@@ -228,10 +258,10 @@ const onSubmit = async (data: RegionalManagerData) => {
                     className="form-input"
                     placeholder="Enter 10-digit phone number"
                     maxLength={10}
-                    disabled={!!editingPhone}
+                    // disabled={!!editingPhone}
                   />
                   {errors.phone_number && <p className="text-red-500 text-sm mt-1">{errors.phone_number.message}</p>}
-                  {editingPhone && <p className="text-sm text-gray-500 mt-1">Phone number cannot be changed</p>}
+                  {/* {editingPhone && <p className="text-sm text-gray-500 mt-1">Phone number cannot be changed</p>} */}
                 </div>
 
                 <div>

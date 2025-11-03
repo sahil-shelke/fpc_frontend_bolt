@@ -137,7 +137,6 @@ const FinancialForm: React.FC = () => {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">FPO ID</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">FY Year</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Turnover</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Profit (After Tax)</th>
@@ -148,7 +147,6 @@ const FinancialForm: React.FC = () => {
             <tbody className="bg-white divide-y divide-gray-200">
               {financials.map((financial) => (
                 <tr key={financial.id}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{financial.fpo_id}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{financial.fy_year}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">₹{Number(financial.turnover).toLocaleString()}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">₹{Number(financial.profit_after_tax).toLocaleString()}</td>
@@ -196,21 +194,11 @@ const FinancialForm: React.FC = () => {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-h-[70vh] overflow-y-auto">
               {/* FPO + FY */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="form-label">FPO *</label>
-                  <select
-                    {...register('fpo_id', { required: 'FPO selection is required' })}
-                    className="form-input"
-                  >
-                    <option value="">Select FPO</option>
-                    {fpos.map((fpo) => (
-                      <option key={fpo.fpo_id} value={fpo.fpo_id}>
-                        {fpo.fpo_name}
-                      </option>
-                    ))}
-                  </select>
-                  {errors.fpo_id && <p className="text-red-500 text-sm mt-1">{errors.fpo_id.message}</p>}
+                                <div>
+                  <label className="form-label">FPO Name *</label>
+                  <div>{fpos[0]?.fpo_name || 'N/A'}</div>
                 </div>
+
 
                 <div>
                   <label className="form-label">Financial Year *</label>

@@ -377,22 +377,24 @@ const uniqueStates = [...new Set(fpos.map(fpo => fpo.state_name))].filter(Boolea
                   <div className="flex items-center space-x-6 text-sm text-gray-600 mb-4">
                     <div className="flex items-center">
                       <Phone className="h-4 w-4 mr-1" />
-                      {fpo.office_contact_number}
+                      <span className="text-xs">FPO Contact Number: {fpo.office_contact_number}</span>
                     </div>
                     <div className="flex items-center">
                       <Mail className="h-4 w-4 mr-1" />
-                      {fpo.office_contact_email}
-                    </div>
-                    <div className="flex items-center">
-                      <Users className="h-4 w-4 mr-1" />
-                      {fpo.donors.length} Donor{fpo.donors.length !== 1 ? 's' : ''}
+                      <span className="text-xs"> FPO Email ID: {fpo.office_contact_email}</span>
                     </div>
                     {fpo.responsible_wotr_staff_phone && (
                       <div className="flex items-center">
                         <Phone className="h-4 w-4 mr-1" />
-                        <span className="text-xs">WOTR: {fpo.responsible_wotr_staff_phone}</span>
+                        <span className="text-xs">Regional Manager Phone: {fpo.responsible_wotr_staff_phone}</span>
                       </div>
                     )}
+                    
+                    <div className="flex items-center">
+                      <Users className="h-4 w-4 mr-1" />
+                      {fpo.donors.length} Donor{fpo.donors.length !== 1 ? 's' : ''}
+                    </div>
+                    
                   </div>
 
                   <div className="flex items-center space-x-4 text-xs text-gray-500">
@@ -750,7 +752,7 @@ const uniqueStates = [...new Set(fpos.map(fpo => fpo.state_name))].filter(Boolea
                     <input
                       {...register('pan', { 
                         required: 'PAN is required',
-                        pattern: { value: /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, message: 'Invalid PAN format' }
+                        // pattern: { value: /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, message: 'Invalid PAN format' }
                       })}
                       className="form-input"
                       placeholder="Enter PAN number"
@@ -778,7 +780,7 @@ const uniqueStates = [...new Set(fpos.map(fpo => fpo.state_name))].filter(Boolea
                     <input
                       {...register('gst_number', { 
                         required: 'GST number is required',
-                        pattern: { value: /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/, message: 'Invalid GST format' }
+                        // pattern: { value: /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/, message: 'Invalid GST format' }
                       })}
                       className="form-input"
                       placeholder="Enter GST number"

@@ -76,7 +76,7 @@ const TrainingEditTab: React.FC<TrainingEditTabProps> = ({ fpoId }) => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`http://localhost:5000/trainings/${fpoId}`, {
+      const response = await axios.get(`http://localhost:5000/training/fpo/${fpoId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       setTrainings(response.data || []);
@@ -139,7 +139,7 @@ const TrainingEditTab: React.FC<TrainingEditTabProps> = ({ fpoId }) => {
 
       if (showAddForm) {
         await axios.post(
-          'http://localhost:5000/trainings/',
+          'http://localhost:5000/training/',
           data,
           {
             headers: { 'Authorization': `Bearer ${token}` }
@@ -163,8 +163,8 @@ const TrainingEditTab: React.FC<TrainingEditTabProps> = ({ fpoId }) => {
 
         changedFields.fpo_id = fpoId;
 
-        await axios.patch(
-          `http://localhost:5000/trainings/${editingId}`,
+        await axios.put(
+          `http://localhost:5000/training/${editingId}`,
           changedFields,
           {
             headers: { 'Authorization': `Bearer ${token}` }

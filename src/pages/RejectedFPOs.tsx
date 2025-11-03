@@ -10,12 +10,12 @@ interface RejectedFPO {
   fpo_id: number;
   comment: string;
   old_details: {
+    state_name: string;
+    district_name: string;
     pan: string;
     tan: string;
     name: string;
-    state: string;
     fpo_id: number;
-    district: string;
     gst_number: string;
     is_approved: boolean;
     office_block: string;
@@ -66,13 +66,13 @@ const RejectedFPOs: React.FC = () => {
   const filteredFPOs = rejectedFPOs.filter(rejection => {
     const fpo = rejection.old_details;
     const matchesSearch = fpo.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         fpo.district.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         fpo.district_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          fpo.fpc_registration_number.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesState = filterState === '' || fpo.state === filterState;
+    const matchesState = filterState === '' || fpo.state_name === filterState;
     return matchesSearch && matchesState;
   });
 
-  const uniqueStates = [...new Set(rejectedFPOs.map(rejection => rejection.old_details.state))].sort();
+  const uniqueStates = [...new Set(rejectedFPOs.map(rejection => rejection.old_details.state_name))].sort();
 
   if (loading) {
     return (
@@ -182,7 +182,7 @@ const RejectedFPOs: React.FC = () => {
                   <div className="flex-1">
                     <div className="flex items-center space-x-3 mb-3">
                       <Building2 className="h-6 w-6 text-red-600" />
-                      <h3 className="text-lg font-semibold text-gray-900">{fpo.fpo_name}</h3>
+                      <h3 className="text-lg font-semibold text-gray-900">{fpo.name}</h3>
                       <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
                         Rejected
                       </span>
@@ -193,7 +193,7 @@ const RejectedFPOs: React.FC = () => {
                         <p className="text-sm text-gray-500">Location</p>
                         <div className="flex items-center">
                           <MapPin className="h-4 w-4 text-gray-400 mr-1" />
-                          <p className="font-medium">{fpo.district}, {fpo.state}</p>
+                          <p className="font-medium">{fpo.district_name}, {fpo.state_name}</p>
                         </div>
                       </div>
                       <div>
@@ -329,7 +329,7 @@ const RejectedFPOs: React.FC = () => {
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Location</p>
-                    <p className="font-medium">{selectedFPO.old_details.district}, {selectedFPO.old_details.state}</p>
+                    <p className="font-medium">{selectedFPO.old_details.district_name}, {selectedFPO.old_details.state_name}</p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Registration Number</p>
