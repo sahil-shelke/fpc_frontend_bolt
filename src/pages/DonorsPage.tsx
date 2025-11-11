@@ -201,28 +201,30 @@ const DonorsPage: React.FC = () => {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-[#E5E7EB]">
+              <thead>
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Donor Name</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Donor Type</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                  <th className="table-header">Donor Name</th>
+                  <th className="table-header">Donor Type</th>
+                  <th className="table-header">Actions</th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white divide-y divide-[#E5E7EB]">
                 {donors.map((donor) => {
                   const fpoName = fpos.find(f => f.fpo_id === donor.fpo_id)?.fpo_name || 'N/A';
                   return (
-                    <tr key={donor.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4">{donor.donor_name}</td>
-                      <td className="px-6 py-4">{donor.donor_type}</td>
-                      <td className="px-6 py-4 flex space-x-2">
-                        <button onClick={() => handleEdit(donor)} className="text-primary-600 hover:text-primary-900">
-                          <Edit2 className="h-4 w-4" />
-                        </button>
-                        <button onClick={() => handleDelete(donor.id)} className="text-red-600 hover:text-red-900">
-                          <Trash2 className="h-4 w-4" />
-                        </button>
+                    <tr key={donor.id} className="hover:bg-[#F9FAFB] transition-colors">
+                      <td className="table-cell font-medium text-[#111827]">{donor.donor_name}</td>
+                      <td className="table-cell">{donor.donor_type}</td>
+                      <td className="table-cell">
+                        <div className="flex items-center space-x-2">
+                          <button onClick={() => handleEdit(donor)} className="btn-icon text-[#3B82F6] hover:text-[#2563EB]">
+                            <Edit2 className="h-4 w-4" strokeWidth={2} />
+                          </button>
+                          <button onClick={() => handleDelete(donor.id)} className="btn-icon text-[#EF4444] hover:text-[#DC2626]">
+                            <Trash2 className="h-4 w-4" strokeWidth={2} />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );

@@ -12,12 +12,14 @@ const Layout: React.FC = () => {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-[#F9FAFB]">
       <Sidebar />
-      <div className="flex-1 flex flex-col overflow-hidden lg:ml-0">
+      <div className="flex-1 flex flex-col overflow-hidden">
         <Header />
-        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6 pt-20 lg:pt-6">
-          <Outlet />
+        <main className="flex-1 overflow-x-hidden overflow-y-auto p-8 pt-20 lg:pt-8">
+          <div className="max-w-7xl mx-auto">
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>

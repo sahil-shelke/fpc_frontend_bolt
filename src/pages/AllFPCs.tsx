@@ -282,13 +282,13 @@ const uniqueStates = [...new Set(fpos.map(fpo => fpo.state_name))].filter(Boolea
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">All FPCs</h1>
-          <p className="text-gray-600">Manage all Farmer Producer Companies across regions</p>
+          <h1 className="text-3xl font-bold text-[#111827] mb-2">All FPCs</h1>
+          <p className="text-[#6B7280]">Manage all Farmer Producer Companies across regions</p>
         </div>
-        <div className="text-sm text-gray-500">
-          Total: {fpos.length} FPCs
+        <div className="px-4 py-2 bg-[#EFF6FF] rounded-lg">
+          <p className="text-sm font-semibold text-[#3B82F6]">{fpos.length} Total FPCs</p>
         </div>
         <button
           onClick={() => setShowCreateForm(true)}
@@ -410,9 +410,9 @@ const uniqueStates = [...new Set(fpos.map(fpo => fpo.state_name))].filter(Boolea
                       setSelectedFPO(fpo);
                       setShowModal(true);
                     }}
-                    className="btn-secondary flex items-center space-x-1"
+                    className="btn-secondary flex items-center space-x-2"
                   >
-                    <Eye className="h-4 w-4" />
+                    <Eye className="h-4 w-4" strokeWidth={2} />
                     <span>View</span>
                   </button>
                   <button
@@ -420,16 +420,16 @@ const uniqueStates = [...new Set(fpos.map(fpo => fpo.state_name))].filter(Boolea
                       setSelectedFPO(fpo);
                       setShowEditModal(true);
                     }}
-                    className="btn-primary flex items-center space-x-1"
+                    className="btn-edit space-x-2"
                   >
-                    <Edit className="h-4 w-4" />
+                    <Edit className="h-4 w-4" strokeWidth={2} />
                     <span>Edit</span>
                   </button>
                   <button
                     onClick={() => handleDelete(fpo.fpo_id)}
-                    className="btn-danger flex items-center space-x-1"
+                    className="btn-delete space-x-2"
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <Trash2 className="h-4 w-4" strokeWidth={2} />
                     <span>Delete</span>
                   </button>
                 </div>

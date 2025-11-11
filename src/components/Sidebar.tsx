@@ -18,11 +18,12 @@ import {
   XCircle,
   Warehouse,
   Menu,
-  X
+  X,
+  LogOut
 } from 'lucide-react';
 
 const Sidebar: React.FC = () => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const getNavigationItems = () => {
@@ -111,52 +112,82 @@ const Sidebar: React.FC = () => {
 
       {/* Sidebar */}
       <div
-        className={`bg-white w-64 shadow-lg fixed lg:static inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out ${
+        className={`bg-white w-64 border-r border-[#E5E7EB] fixed lg:static inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out flex flex-col ${
           isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}
       >
         {/* Close button for mobile */}
         <button
           onClick={() => setIsMobileMenuOpen(false)}
-          className="lg:hidden absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+          className="lg:hidden absolute top-6 right-6 text-[#6B7280] hover:text-[#111827] transition-colors"
           aria-label="Close menu"
         >
-          <X className="h-6 w-6" />
+          <X className="h-5 w-5" />
         </button>
 
-        <div className="flex items-center justify-center h-16 border-b border-gray-200">
-          <h1 className="text-xl font-bold text-gray-800">FPC Management</h1>
+        {/* Logo Section */}
+        <div className="px-6 py-8 border-b border-[#E5E7EB]">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-[#3B82F6] to-[#2563EB] rounded-xl flex items-center justify-center">
+              <Building2 className="h-6 w-6 text-white" strokeWidth={2.5} />
+            </div>
+            <div>
+              <h1 className="text-lg font-bold text-[#111827]">FPC Manager</h1>
+              <p className="text-xs text-[#6B7280]">WOTR System</p>
+            </div>
+          </div>
         </div>
 
+        {/* User Info */}
         {user && (
-          <div className="px-4 py-3 border-b border-gray-200 bg-gray-50">
-            <p className="text-sm font-medium text-gray-900">{user.firstName} {user.lastName}</p>
-            <p className="text-xs text-gray-500 capitalize">{user.role.replace('_', ' ')}</p>
-         
+          <div className="px-6 py-4 border-b border-[#E5E7EB]">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 rounded-full bg-[#EFF6FF] flex items-center justify-center">
+                <span className="text-sm font-semibold text-[#3B82F6]">
+                  {user.firstName?.charAt(0)}{user.lastName?.charAt(0)}
+                </span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-[#111827] truncate">
+                  {user.firstName} {user.lastName}
+                </p>
+                <p className="text-xs text-[#6B7280] capitalize truncate">
+                  {user.role.replace('_', ' ')}
+                </p>
+              </div>
+            </div>
           </div>
         )}
 
-        <nav className="mt-8">
-          <div className="px-4 space-y-2">
+        {/* Navigation - Flex grow to push logout to bottom */}
+        <nav className="flex-1 overflow-y-auto py-6">
+          <div className="px-4 space-y-1">
             {navigation.map((item) => (
               <NavLink
                 key={item.name}
                 to={item.href}
                 onClick={() => setIsMobileMenuOpen(false)}
                 className={({ isActive }) =>
-                  `flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
-                    isActive
-                      ? 'bg-primary-100 text-primary-700 border-r-2 border-primary-700'
-                      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-                  }`
+                  isActive ? 'nav-link-active' : 'nav-link'
                 }
               >
-                <item.icon className="mr-3 h-5 w-5" />
-                {item.name}
+                <item.icon className="h-5 w-5" strokeWidth={2} />
+                <span className="text-sm">{item.name}</span>
               </NavLink>
             ))}
           </div>
         </nav>
+
+        {/* Logout Button - Pinned to bottom */}
+        <div className="px-4 py-6 border-t border-[#E5E7EB] bg-[#F9FAFB]">
+          <button
+            onClick={logout}
+            className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-[#EF4444] hover:bg-[#FEF2F2] transition-all duration-200 font-medium"
+          >
+            <LogOut className="h-5 w-5" strokeWidth={2} />
+            <span className="text-sm">Logout</span>
+          </button>
+        </div>
       </div>
     </>
   );

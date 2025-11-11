@@ -517,42 +517,44 @@ const ShareholdersPage: React.FC = () => {
       {/* Shareholders List */}
       <div className="card p-6">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full divide-y divide-[#E5E7EB]">
+            <thead>
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Gender</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Position</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Share Money</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SC/ST</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                <th className="table-header">Name</th>
+                <th className="table-header">Gender</th>
+                <th className="table-header">Position</th>
+                <th className="table-header">Share Money</th>
+                <th className="table-header">SC/ST</th>
+                <th className="table-header">Actions</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white divide-y divide-[#E5E7EB]">
               {filteredShareholders.map((shareholder) => (
-                <tr key={shareholder.id}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{shareholder.member_name}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{shareholder.gender === 'm' ? 'Male' : 'Female'}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{shareholder.position_of_member}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <tr key={shareholder.id} className="hover:bg-[#F9FAFB] transition-colors">
+                  <td className="table-cell font-medium text-[#111827]">{shareholder.member_name}</td>
+                  <td className="table-cell">{shareholder.gender === 'm' ? 'Male' : 'Female'}</td>
+                  <td className="table-cell">{shareholder.position_of_member}</td>
+                  <td className="table-cell">
                     {shareholder.sharemoney_deposited_by_member ? `₹${(shareholder.sharemoney_deposited_by_member).toLocaleString()}` : 'N/A'}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{shareholder.is_scst ? 'Yes' : 'No'}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                    <button
-                      onClick={() => handleEdit(shareholder)}
-                      className="text-primary-600 hover:text-primary-900 inline-flex items-center space-x-1"
-                    >
-                      <Edit className="h-4 w-4" />
-                      <span>Edit</span>
-                    </button>
-                    <button
-                      onClick={() => handleDelete(shareholder.id)}
-                      className="text-red-600 hover:text-red-900 inline-flex items-center space-x-1"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                      <span>Delete</span>
-                    </button>
+                  <td className="table-cell">{shareholder.is_scst ? 'Yes' : 'No'}</td>
+                  <td className="table-cell">
+                    <div className="flex items-center space-x-2">
+                      <button
+                        onClick={() => handleEdit(shareholder)}
+                        className="btn-edit"
+                      >
+                        <Edit className="h-4 w-4" strokeWidth={2} />
+                        <span>Edit</span>
+                      </button>
+                      <button
+                        onClick={() => handleDelete(shareholder.id)}
+                        className="btn-delete"
+                      >
+                        <Trash2 className="h-4 w-4" strokeWidth={2} />
+                        <span>Delete</span>
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

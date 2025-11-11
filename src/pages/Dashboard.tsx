@@ -265,29 +265,27 @@ const fetchAnnualAgriStats = async (year: string) => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-gray-600 capitalize">Welcome, {user?.firstName} ({user?.role.replace('_', ' ')})</p>
+          <h1 className="text-3xl font-bold text-[#111827] mb-2">Dashboard</h1>
+          <p className="text-[#6B7280] capitalize">Welcome back, {user?.firstName}</p>
         </div>
-        <div className="text-sm text-gray-500">
-          Last updated: {new Date().toLocaleString()}
+        <div className="text-sm text-[#9CA3AF]">
+          {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
         </div>
       </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {getStatCards().map((stat, index) => (
-          <div key={index} className="card p-6">
-            <div className="flex items-center">
-              <div className={`p-3 rounded-lg ${stat.bgColor}`}>
-                <stat.icon className={`h-6 w-6 ${stat.color}`} />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+          <div key={index} className="stat-card">
+            <div className="flex items-center justify-between mb-4">
+              <div className={`p-3 rounded-xl ${stat.bgColor}`}>
+                <stat.icon className={`h-6 w-6 ${stat.color}`} strokeWidth={2} />
               </div>
             </div>
+            <p className="text-sm font-medium text-[#6B7280] mb-1">{stat.title}</p>
+            <p className="text-3xl font-bold text-[#111827]">{stat.value}</p>
           </div>
         ))}
       </div>
