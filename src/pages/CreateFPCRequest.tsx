@@ -573,11 +573,10 @@ const CreateFPCRequest: React.FC = () => {
                 <label className="form-label">Upload PAN Document</label>
                 <div className="space-y-2">
                   {!panFile ? (
-                    <label htmlFor="pan-upload" className="flex items-center justify-center w-full px-4 py-6 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors">
-                      <div className="flex flex-col items-center space-y-1">
-                        <Upload className="h-6 w-6 text-gray-400" />
-                        <span className="text-xs text-gray-600">Upload PAN</span>
-                        <span className="text-xs text-gray-500">JPG, PNG, PDF (Max 5MB)</span>
+                    <label htmlFor="pan-upload" className="flex items-center justify-center w-full h-[42px] px-4 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors">
+                      <div className="flex items-center space-x-2">
+                        <Upload className="h-4 w-4 text-gray-400" />
+                        <span className="text-sm text-gray-600">Click to upload (JPG, PNG, PDF - Max 5MB)</span>
                       </div>
                       <input
                         id="pan-upload"
@@ -588,18 +587,18 @@ const CreateFPCRequest: React.FC = () => {
                       />
                     </label>
                   ) : (
-                    <div className="flex items-center justify-between p-3 bg-gray-50 border border-gray-300 rounded-lg">
+                    <div className="flex items-center justify-between h-[42px] px-3 bg-green-50 border border-green-300 rounded-lg">
                       <div className="flex items-center space-x-2">
                         {getFileIcon(panFile)}
-                        <div>
-                          <p className="text-sm font-medium text-gray-900">{panFile.name}</p>
-                          <p className="text-xs text-gray-500">{(panFile.size / 1024).toFixed(2)} KB</p>
+                        <div className="flex items-center space-x-2">
+                          <p className="text-sm font-medium text-gray-900 truncate max-w-[200px]">{panFile.name}</p>
+                          <span className="text-xs text-gray-500">({(panFile.size / 1024).toFixed(2)} KB)</span>
                         </div>
                       </div>
                       <button
                         type="button"
                         onClick={() => removeFile(setPanFile, 'pan-upload')}
-                        className="p-1 hover:bg-gray-200 rounded-full transition-colors"
+                        className="p-1 hover:bg-green-100 rounded-full transition-colors"
                       >
                         <X className="h-4 w-4 text-gray-600" />
                       </button>
@@ -628,11 +627,10 @@ const CreateFPCRequest: React.FC = () => {
                 <label className="form-label">Upload TAN Document</label>
                 <div className="space-y-2">
                   {!tanFile ? (
-                    <label htmlFor="tan-upload" className="flex items-center justify-center w-full px-4 py-6 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors">
-                      <div className="flex flex-col items-center space-y-1">
-                        <Upload className="h-6 w-6 text-gray-400" />
-                        <span className="text-xs text-gray-600">Upload TAN</span>
-                        <span className="text-xs text-gray-500">JPG, PNG, PDF (Max 5MB)</span>
+                    <label htmlFor="tan-upload" className="flex items-center justify-center w-full h-[42px] px-4 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors">
+                      <div className="flex items-center space-x-2">
+                        <Upload className="h-4 w-4 text-gray-400" />
+                        <span className="text-sm text-gray-600">Click to upload (JPG, PNG, PDF - Max 5MB)</span>
                       </div>
                       <input
                         id="tan-upload"
@@ -643,18 +641,18 @@ const CreateFPCRequest: React.FC = () => {
                       />
                     </label>
                   ) : (
-                    <div className="flex items-center justify-between p-3 bg-gray-50 border border-gray-300 rounded-lg">
+                    <div className="flex items-center justify-between h-[42px] px-3 bg-green-50 border border-green-300 rounded-lg">
                       <div className="flex items-center space-x-2">
                         {getFileIcon(tanFile)}
-                        <div>
-                          <p className="text-sm font-medium text-gray-900">{tanFile.name}</p>
-                          <p className="text-xs text-gray-500">{(tanFile.size / 1024).toFixed(2)} KB</p>
+                        <div className="flex items-center space-x-2">
+                          <p className="text-sm font-medium text-gray-900 truncate max-w-[200px]">{tanFile.name}</p>
+                          <span className="text-xs text-gray-500">({(tanFile.size / 1024).toFixed(2)} KB)</span>
                         </div>
                       </div>
                       <button
                         type="button"
                         onClick={() => removeFile(setTanFile, 'tan-upload')}
-                        className="p-1 hover:bg-gray-200 rounded-full transition-colors"
+                        className="p-1 hover:bg-green-100 rounded-full transition-colors"
                       >
                         <X className="h-4 w-4 text-gray-600" />
                       </button>
@@ -683,11 +681,10 @@ const CreateFPCRequest: React.FC = () => {
                 <label className="form-label">Upload GST Document</label>
                 <div className="space-y-2">
                   {!gstFile ? (
-                    <label htmlFor="gst-upload" className="flex items-center justify-center w-full px-4 py-6 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors">
-                      <div className="flex flex-col items-center space-y-1">
-                        <Upload className="h-6 w-6 text-gray-400" />
-                        <span className="text-xs text-gray-600">Upload GST</span>
-                        <span className="text-xs text-gray-500">JPG, PNG, PDF (Max 5MB)</span>
+                    <label htmlFor="gst-upload" className="flex items-center justify-center w-full h-[42px] px-4 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors">
+                      <div className="flex items-center space-x-2">
+                        <Upload className="h-4 w-4 text-gray-400" />
+                        <span className="text-sm text-gray-600">Click to upload (JPG, PNG, PDF - Max 5MB)</span>
                       </div>
                       <input
                         id="gst-upload"
@@ -698,18 +695,18 @@ const CreateFPCRequest: React.FC = () => {
                       />
                     </label>
                   ) : (
-                    <div className="flex items-center justify-between p-3 bg-gray-50 border border-gray-300 rounded-lg">
+                    <div className="flex items-center justify-between h-[42px] px-3 bg-green-50 border border-green-300 rounded-lg">
                       <div className="flex items-center space-x-2">
                         {getFileIcon(gstFile)}
-                        <div>
-                          <p className="text-sm font-medium text-gray-900">{gstFile.name}</p>
-                          <p className="text-xs text-gray-500">{(gstFile.size / 1024).toFixed(2)} KB</p>
+                        <div className="flex items-center space-x-2">
+                          <p className="text-sm font-medium text-gray-900 truncate max-w-[200px]">{gstFile.name}</p>
+                          <span className="text-xs text-gray-500">({(gstFile.size / 1024).toFixed(2)} KB)</span>
                         </div>
                       </div>
                       <button
                         type="button"
                         onClick={() => removeFile(setGstFile, 'gst-upload')}
-                        className="p-1 hover:bg-gray-200 rounded-full transition-colors"
+                        className="p-1 hover:bg-green-100 rounded-full transition-colors"
                       >
                         <X className="h-4 w-4 text-gray-600" />
                       </button>
