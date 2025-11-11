@@ -50,7 +50,7 @@ const RegionalManagers: React.FC = () => {
   const fetchManagers = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/rm/', {
+      const response = await axios.get('/api/rm/', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -64,7 +64,7 @@ const RegionalManagers: React.FC = () => {
   const fetchDistricts = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/districts/districts', {
+      const response = await axios.get('/api/districts/districts', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -104,12 +104,12 @@ const onSubmit = async (data: RegionalManagerData) => {
     }
 
     if (editingPhone) {
-      await axios.put(`http://localhost:5000/rm/${editingPhone}`, payloadToSend, { headers });
+      await axios.put(`/api/rm/${editingPhone}`, payloadToSend, { headers });
       toast.success('Regional Manager updated successfully!');
       setEditingPhone(null);
       setOriginalData(null);
     } else {
-      await axios.post('http://localhost:5000/rm/', finalData, { headers });
+      await axios.post('/api/rm/', finalData, { headers });
       toast.success('Regional Manager created successfully!');
     }
 
@@ -159,7 +159,7 @@ const handleEdit = (manager: any) => {
     if (window.confirm('Are you sure you want to delete this Regional Manager?')) {
       try {
         const token = localStorage.getItem('token');
-        await axios.delete(`http://localhost:5000/rm/${phone_number}`, {
+        await axios.delete(`/api/rm/${phone_number}`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }

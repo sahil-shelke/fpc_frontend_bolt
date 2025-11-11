@@ -27,7 +27,7 @@ const BoardOfDirectors: React.FC = () => {
     const fetchFPOs = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:5000/fpo/approved', {
+        const response = await axios.get('/api/fpo/approved', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setFpos(response.data);
@@ -46,7 +46,7 @@ const BoardOfDirectors: React.FC = () => {
   const fetchDirectors = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:5000/bod_details/${fpoId}`);
+      const response = await axios.get(`/api/bod_details/${fpoId}`);
       setDirectors(response.data);
       console.log(response.data);
     } catch (error: any) {

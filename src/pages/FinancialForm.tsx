@@ -32,7 +32,7 @@ const FinancialForm: React.FC = () => {
     const fetchFPOs = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:5000/fpo/approved', {
+        const response = await axios.get('/api/fpo/approved', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         setFpos(response.data);
@@ -51,7 +51,7 @@ const FinancialForm: React.FC = () => {
 
   const fetchFinancials = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/financial_details/${fpo_id}`);
+      const response = await axios.get(`/api/financial_details/${fpo_id}`);
       setFinancials(response.data);
     } catch (error) {
       toast.error('Failed to fetch financial details');
@@ -64,11 +64,15 @@ const FinancialForm: React.FC = () => {
     setLoading(true);
     try {
       if (editingId) {
-        await axios.put(`http://localhost:5000/financial_details/${editingId}`, data);
+        await axios.put(`/api/financial_details/${editingId}`, data);
         toast.success('Financial details updated successfully!');
         setEditingId(null);
       } else {
-        await axios.post('http://localhost:5000/financial_details/', data);
+        const payload = {
+        ...data, 
+        fpo_id
+        }
+        await axios.post('/api/financial_details/', payload);
         toast.success('Financial details created successfully!');
       }
       reset();
@@ -90,7 +94,7 @@ const FinancialForm: React.FC = () => {
   const handleDelete = async (id: number) => {
     if (window.confirm('Are you sure you want to delete this financial record?')) {
       try {
-        await axios.delete(`http://localhost:5000/financial_details/${id}`);
+        await axios.delete(`/api/financial_details/${id}`);
         toast.success('Financial record deleted successfully!');
         fetchFinancials();
       } catch (error) {

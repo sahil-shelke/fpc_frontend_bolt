@@ -29,7 +29,7 @@ const ChairpersonForm: React.FC = () => {
 
   const fetchChairpersons = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/chairperson_details/');
+      const response = await axios.get('/api/chairperson_details/');
       setChairpersons(response.data);
     } catch (error) {
       toast.error('Failed to fetch chairperson details');
@@ -38,7 +38,7 @@ const ChairpersonForm: React.FC = () => {
 
   const fetchFPOs = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/fpo/');
+      const response = await axios.get('/api/fpo/');
       setFpos(response.data);
     } catch (error) {
       toast.error('Failed to fetch FPOs');
@@ -49,11 +49,11 @@ const ChairpersonForm: React.FC = () => {
     setLoading(true);
     try {
       if (editingId) {
-        await axios.put(`http://localhost:5000/chairperson_details/${editingId}`, data);
+        await axios.put(`/api/chairperson_details/${editingId}`, data);
         toast.success('Chairperson details updated successfully!');
         setEditingId(null);
       } else {
-        await axios.post('http://localhost:5000/chairperson_details/', data);
+        await axios.post('/api/chairperson_details/', data);
         toast.success('Chairperson details created successfully!');
       }
       reset();
@@ -73,7 +73,7 @@ const ChairpersonForm: React.FC = () => {
   const handleDelete = async (id: number) => {
     if (window.confirm('Are you sure you want to delete this chairperson record?')) {
       try {
-        await axios.delete(`http://localhost:5000/chairperson_details/${id}`);
+        await axios.delete(`/api/chairperson_details/${id}`);
         toast.success('Chairperson record deleted successfully!');
         fetchChairpersons();
       } catch (error) {

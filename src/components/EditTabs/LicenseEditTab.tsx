@@ -62,7 +62,7 @@ const LicenseEditTab: React.FC<LicenseEditTabProps> = ({ fpoId }) => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`http://localhost:5000/licenses/${fpoId}`, {
+      const response = await axios.get(`/api/licenses/${fpoId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       setLicenses(response.data || []);
@@ -120,7 +120,7 @@ const LicenseEditTab: React.FC<LicenseEditTabProps> = ({ fpoId }) => {
 
       if (showAddForm) {
         await axios.post(
-          'http://localhost:5000/licenses/',
+          '/api/licenses/',
           data,
           {
             headers: { 'Authorization': `Bearer ${token}` }
@@ -145,7 +145,7 @@ const LicenseEditTab: React.FC<LicenseEditTabProps> = ({ fpoId }) => {
         changedFields.fpo_id = fpoId;
 
         await axios.put(
-          `http://localhost:5000/licenses/${editingId}`,
+          `/api/licenses/${editingId}`,
           changedFields,
           {
             headers: { 'Authorization': `Bearer ${token}` }

@@ -74,7 +74,7 @@ const Login: React.FC = () => {
             </button>
           </form>
 
-          <div className="mt-6 text-center text-sm text-gray-600">
+          {/* <div className="mt-6 text-center text-sm text-gray-600">
             <p>Demo credentials:</p>
             <div className="space-y-1 mt-2">
               <p><strong>Super Admin:</strong> admin@company.com | password</p>
@@ -82,7 +82,7 @@ const Login: React.FC = () => {
               <p><strong>Project Manager:</strong> project@company.com | password</p>
               <p><strong>FPC User:</strong> fpc@company.com | password</p>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

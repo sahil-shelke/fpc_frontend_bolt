@@ -70,12 +70,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (email: string, password: string) => {
     try {
       // Call actual login API
-      const response = await axios.post('http://localhost:5000/login', {
+      const response = await axios.post('/api/login', {
         email,
         password
       });
-
+      
       const { access_token } = response.data;
+      setToken(access_token);
+      localStorage.setItem('token', access_token);
+      axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
+
+      const username = await axios.get('/api/me')
+      const {userdata} = username.data;
+      console.log(userdata)
+
       
       // Decode JWT token to get user info (you might want to use a proper JWT library)
       const tokenPayload = JSON.parse(atob(access_token.split('.')[1]));
@@ -92,18 +100,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const user: User = {
         id: tokenPayload.email, // Using email as ID since that's what we have
         email: tokenPayload.email,
-        firstName: 'User', // You might want to fetch this from a separate API call
-        lastName: 'Name',
+        firstName: userdata.first_name, // You might want to fetch this from a separate API call
+        lastName: userdata.last_name,
         role: roleMap[tokenPayload.role] || 'fpc_user',
         region: 'Region', // You might want to fetch this from user profile
         isActive: true
       };
+      console.log(user)
       
       setUser(user);
-      setToken(access_token);
-      localStorage.setItem('token', access_token);
       localStorage.setItem('user', JSON.stringify(user));
-      axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
       setIsAuthenticated(true);
     } catch (error) {
       throw error;

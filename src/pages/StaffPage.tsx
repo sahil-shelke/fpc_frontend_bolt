@@ -33,7 +33,7 @@ const StaffPage: React.FC = () => {
     const fetchFPOs = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:5000/fpo/approved', {
+        const response = await axios.get('/api/fpo/approved', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         setFpos(response.data);
@@ -52,7 +52,7 @@ const StaffPage: React.FC = () => {
 
   const fetchStaff = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/staff/${fpo_id}`);
+      const response = await axios.get(`/api/staff/${fpo_id}`);
       setStaff(response.data);
     } catch (error) {
       toast.error('Failed to fetch staff members');
@@ -64,11 +64,15 @@ const StaffPage: React.FC = () => {
     setLoading(true);
     try {
       if (editingId) {
-        await axios.put(`http://localhost:5000/staff/${editingId}`, data);
+        await axios.put(`/api/staff/${editingId}`, data);
         toast.success('Staff member updated successfully!');
         setEditingId(null);
       } else {
-        await axios.post('http://localhost:5000/staff/', data);
+        const payload = {
+          ...data,
+          fpo_id
+        }
+        await axios.post('/api/staff/', payload);
         toast.success('Staff member created successfully!');
       }
       reset();
@@ -93,7 +97,7 @@ const StaffPage: React.FC = () => {
   const handleDelete = async (id: number) => {
     if (window.confirm('Are you sure you want to delete this staff member?')) {
       try {
-        await axios.delete(`http://localhost:5000/staff/${id}`);
+        await axios.delete(`/api/staff/${id}`);
         toast.success('Staff member deleted successfully!');
         fetchStaff();
       } catch (error) {
@@ -243,6 +247,10 @@ const StaffPage: React.FC = () => {
 
             <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                       <label className="form-label">FPO Name *</label>
+                       <div>{fpos[0]?.fpo_name || 'N/A'}</div>
+                     </div>
                 <div>
                   <label className="form-label">Phone Number *</label>
                   <input
@@ -342,21 +350,6 @@ const StaffPage: React.FC = () => {
                   />
                 </div>
 
-                <div>
-                  <label className="form-label">FPO *</label>
-                  <select
-                    {...register('fpo_id', { required: 'FPO selection is required' })}
-                    className="form-input"
-                  >
-                    <option value="">Select FPO</option>
-                    {fpos.map((fpo) => (
-                      <option key={fpo.fpo_id} value={fpo.fpo_id}>
-                        {fpo.fpo_name}
-                      </option>
-                    ))}
-                  </select>
-                  {errors.fpo_id && <p className="text-red-500 text-sm mt-1">{errors.fpo_id.message}</p>}
-                </div>
               </div>
 
               <div className="flex justify-end space-x-4 pt-6 border-t">

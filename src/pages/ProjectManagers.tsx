@@ -48,7 +48,7 @@ const ProjectManagers: React.FC = () => {
   const fetchManagers = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/pm/', {
+      const response = await axios.get('/api/pm/', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -62,7 +62,7 @@ const ProjectManagers: React.FC = () => {
   const fetchDistricts = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/districts/districts', {
+      const response = await axios.get('/api/districts/districts', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -99,12 +99,12 @@ const ProjectManagers: React.FC = () => {
     }
 
     if (editingPhone) {
-      await axios.put(`http://localhost:5000/pm/${editingPhone}`, payloadToSend, { headers });
+      await axios.put(`/api/pm/${editingPhone}`, payloadToSend, { headers });
       toast.success('Project Manager updated successfully!');
       setEditingPhone(null);
       setOriginalData(null);
     } else {
-      await axios.post('http://localhost:5000/pm/', finalData, { headers });
+      await axios.post('/api/pm/', finalData, { headers });
       toast.success('Project Manager created successfully!');
     }
 
@@ -153,7 +153,7 @@ const handleEdit = (manager: any) => {
     if (window.confirm('Are you sure you want to delete this Project Manager?')) {
       try {
         const token = localStorage.getItem('token');
-        await axios.delete(`http://localhost:5000/pm/${phone_number}`, {
+        await axios.delete(`/api/pm/${phone_number}`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }

@@ -33,7 +33,7 @@ const ComplianceForm: React.FC = () => {
     const fetchFPOs = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:5000/fpo/approved', {
+        const response = await axios.get('/api/fpo/approved', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         setFpos(response.data);
@@ -52,7 +52,7 @@ const ComplianceForm: React.FC = () => {
 
   const fetchCompliances = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/fpc_compliance/${fpo_id}`);
+      const response = await axios.get(`/api/fpc_compliance/${fpo_id}`);
       setCompliances(response.data);
       console.log('Fetched compliances:', response.data);
     } catch (error) {
@@ -65,11 +65,15 @@ const ComplianceForm: React.FC = () => {
     setLoading(true);
     try {
       if (editingId) {
-        await axios.put(`http://localhost:5000/fpc_compliance/${editingId}`, data);
+        await axios.put(`/api/fpc_compliance/${editingId}`, data);
         toast.success('Compliance details updated successfully!');
         setEditingId(null);
       } else {
-        await axios.post('http://localhost:5000/fpc_compliance/', data);
+        const payload = {
+          ...data, 
+          fpo_id
+        }
+        await axios.post('/api/fpc_compliance/', payload);
         toast.success('Compliance details created successfully!');
       }
       reset();
@@ -91,7 +95,7 @@ const ComplianceForm: React.FC = () => {
   const handleDelete = async (fpo_id: number) => {
     if (window.confirm('Are you sure you want to delete this compliance record?')) {
       try {
-        await axios.delete(`http://localhost:5000/fpc_compliance/${fpo_id}`);
+        await axios.delete(`/api/fpc_compliance/${fpo_id}`);
         toast.success('Compliance record deleted successfully!');
         fetchCompliances();
       } catch (error) {
@@ -206,7 +210,8 @@ const ComplianceForm: React.FC = () => {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               {/* Basic Info */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <div>
+                  
+                <div>
                   <label className="form-label">FPO Name *</label>
                   <div>{fpos[0]?.fpo_name || 'N/A'}</div>
                 </div>

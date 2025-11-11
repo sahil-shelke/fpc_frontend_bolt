@@ -76,7 +76,7 @@ const PendingRequests: React.FC = () => {
   const fetchUserAuth = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/user/auth', {
+      const response = await axios.get('/api/user/auth', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -91,7 +91,7 @@ const PendingRequests: React.FC = () => {
   const fetchDistricts = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/districts/districts', {
+      const response = await axios.get('/api/districts/districts', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -108,7 +108,7 @@ const PendingRequests: React.FC = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/fpo/pending', {
+      const response = await axios.get('/api/fpo/pending', {
         headers: {
           'Authorization': `Bearer ${token}`
         }

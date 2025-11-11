@@ -28,7 +28,7 @@ interface CreateFPCRequestData {
   bod_date_of_joining: string;
   bod_qualification: string;
   address: string;
-  bod_DIN:string
+  bod_din:string
 }
 
 interface ProjectManager {
@@ -82,7 +82,7 @@ const CreateFPCRequest: React.FC = () => {
   const fetchProjectManagers = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/pm/', {
+      const response = await axios.get('/api/pm/', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -97,7 +97,7 @@ const CreateFPCRequest: React.FC = () => {
   const fetchRegionalManagers = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/rm/', {
+      const response = await axios.get('/api/rm/', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -111,7 +111,7 @@ const CreateFPCRequest: React.FC = () => {
   const fetchDistricts = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/districts/districts', {
+      const response = await axios.get('/api/districts/districts', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -135,7 +135,7 @@ const CreateFPCRequest: React.FC = () => {
         name: data.bod_name,
         gender:data.bod_gender,
         education_qualification: data.bod_qualification,
-        din: data.bod_DIN,
+        din: data.bod_din,
         address: data.address
       }
       const payload = {
@@ -160,7 +160,7 @@ const CreateFPCRequest: React.FC = () => {
 
       console.log('Sending payload:', payload);
 
-      const response = await fetch('http://localhost:5000/fpo/', {
+      const response = await fetch('/api/fpo/', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -358,7 +358,7 @@ const CreateFPCRequest: React.FC = () => {
              <div>
                 <label className="form-label">DIN</label>
                 <input
-                  {...register('bod_DIN')}
+                  {...register('bod_din')}
                   className="form-input"
                   placeholder="Enter DIN"
                 />
@@ -373,7 +373,7 @@ const CreateFPCRequest: React.FC = () => {
             <div className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="form-label">Office Block *</label>
+                  <label className="form-label">FPO Office Block *</label>
                   <input
                     {...register('office_block', { required: 'Office block is required' })}
                     className="form-input"
@@ -383,7 +383,7 @@ const CreateFPCRequest: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="form-label">Contact Person *</label>
+                  <label className="form-label">FPO Contact Person Name *</label>
                   <input
                     {...register('office_contact_name', { required: 'Contact person is required' })}
                     className="form-input"
@@ -393,7 +393,7 @@ const CreateFPCRequest: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="form-label">Contact Phone *</label>
+                  <label className="form-label">FPO Contact Phone Number *</label>
                   <input
                     {...register('office_contact_number', {
                       required: 'Contact phone is required',
@@ -407,7 +407,7 @@ const CreateFPCRequest: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="form-label">Contact Email *</label>
+                  <label className="form-label">FPO Contact Email *</label>
                   <input
                     type="email"
                     {...register('office_contact_email', { required: 'Contact email is required' })}
@@ -419,17 +419,25 @@ const CreateFPCRequest: React.FC = () => {
 
                 <div>
                   <label className="form-label">WOTR Staff (Regional Manager) *</label>
-                  <select
-                    {...register('responsible_wotr_staff_phone', { required: 'WOTR staff is required' })}
-                    className="form-input"
-                  >
-                    <option value="">Select Regional Manager</option>
-                    {regionalManagers.map((rm) => (
-                      <option key={rm.phone_number} value={rm.phone_number}>
-                        {rm.first_name} {rm.last_name} | {rm.districtname || 'N/A'}, {rm.statename || 'N/A'} | {rm.phone_number}
-                      </option>
-                    ))}
-                  </select>
+{regionalManagers
+  .filter((rm) => rm.email === user?.email)
+  .map((rm) => (
+    <div key={rm.phone_number}>
+      <input
+        type="text"
+        value={`${rm.first_name} ${rm.last_name} | ${rm.districtname || 'N/A'}, ${rm.statename || 'N/A'} | ${rm.phone_number}`}
+        readOnly
+        className="form-input bg-gray-100 cursor-not-allowed"
+       
+      />
+      <input
+        type="hidden"
+        value={rm.phone_number}
+        {...register('responsible_wotr_staff_phone', { required: 'WOTR staff is required' })}
+      />
+    </div>
+  ))}
+
                   {errors.responsible_wotr_staff_phone && <p className="text-red-500 text-sm mt-1">{errors.responsible_wotr_staff_phone.message}</p>}
                 </div>
 

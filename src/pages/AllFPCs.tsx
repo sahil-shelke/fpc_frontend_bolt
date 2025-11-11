@@ -118,7 +118,7 @@ const AllFPCs: React.FC = () => {
 const fetchFPOs = async () => {
   try {
     const token = localStorage.getItem('token');
-    const response = await axios.get('http://localhost:5000/fpo/approved', {
+    const response = await axios.get('/api/fpo/approved', {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -146,7 +146,7 @@ const fetchFPOs = async () => {
   const fetchProjectManagers = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/pm/', {
+      const response = await axios.get('/api/pm/', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -161,7 +161,7 @@ const fetchFPOs = async () => {
   const fetchRegionalManagers = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/rm/', {
+      const response = await axios.get('/api/rm/', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -176,7 +176,7 @@ const fetchFPOs = async () => {
   const fetchDistricts = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/districts/districts', {
+      const response = await axios.get('/api/districts/districts', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -192,7 +192,7 @@ const fetchFPOs = async () => {
     if (window.confirm('Are you sure you want to delete this FPO? This action cannot be undone.')) {
       try {
         const token = localStorage.getItem('token');
-        await axios.delete(`http://localhost:5000/fpo/${fpoId}`, {
+        await axios.delete(`/api/fpo/${fpoId}`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -221,13 +221,13 @@ const fetchFPOs = async () => {
           name: data.bod_name,
           gender: data.bod_gender,
           education_qualification: data.bod_qualification || "",
-          DIN: data.bod_din || "",
+          din: data.bod_din,
           address: data.address || "",
           date_of_joining: data.bod_date_of_joining || null
         }
       };
 
-      const response = await fetch('http://localhost:5000/fpo/', {
+      const response = await fetch('/api/fpo/', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -604,6 +604,7 @@ const uniqueStates = [...new Set(fpos.map(fpo => fpo.state_name))].filter(Boolea
                     <input
                       {...register('bod_din')}
                       className="form-input"
+                      type='text'
                       placeholder="Enter DIN"
                     />
                   </div>

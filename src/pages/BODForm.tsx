@@ -29,7 +29,7 @@ const BODForm: React.FC = () => {
 
   const fetchBODs = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/bod_details/');
+      const response = await axios.get('/api/bod_details/');
       setBods(response.data);
     } catch (error) {
       toast.error('Failed to fetch BOD details');
@@ -38,7 +38,7 @@ const BODForm: React.FC = () => {
 
   const fetchFPOs = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/fpo/');
+      const response = await axios.get('/api/fpo/');
       setFpos(response.data);
     } catch (error) {
       toast.error('Failed to fetch FPOs');
@@ -49,11 +49,11 @@ const BODForm: React.FC = () => {
     setLoading(true);
     try {
       if (editingId) {
-        await axios.put(`http://localhost:5000/bod_details/${editingId}`, data);
+        await axios.put(`/api/bod_details/${editingId}`, data);
         toast.success('BOD details updated successfully!');
         setEditingId(null);
       } else {
-        await axios.post('http://localhost:5000/bod_details/', data);
+        await axios.post('/api/bod_details/', data);
         toast.success('BOD details created successfully!');
       }
       reset();
@@ -73,7 +73,7 @@ const BODForm: React.FC = () => {
   const handleDelete = async (mobile_number: string) => {
     if (window.confirm('Are you sure you want to delete this BOD record?')) {
       try {
-        await axios.delete(`http://localhost:5000/bod_details/${mobile_number}`);
+        await axios.delete(`/api/bod_details/${mobile_number}`);
         toast.success('BOD record deleted successfully!');
         fetchBODs();
       } catch (error) {

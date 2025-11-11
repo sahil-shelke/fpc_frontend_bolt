@@ -63,7 +63,7 @@ const Agribusiness: React.FC = () => {
       const token = localStorage.getItem('token');
       const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
 
-      const response = await axios.get('http://localhost:5000/agri_business', { headers });
+      const response = await axios.get('/api/agri_business/', { headers });
       setFpoList(response.data);
       console.log('Fetched FPOs:', response.data);
       setShowModal(true);
@@ -128,7 +128,7 @@ const invalidEntries = entries.filter(entry => {
       const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
 
       const promises = entries.map(entry =>
-        axios.post('http://localhost:5000/agri_business', {
+        axios.post('/api/agri_business/', {
           fpo_id: selectedFPO.fpo_id,
           state_code: selectedFPO.state_code,
           district_code: selectedFPO.district_code,
@@ -175,7 +175,7 @@ const invalidEntries = entries.filter(entry => {
       try {
         const token = localStorage.getItem('token');
         const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
-        const response = await axios.get('http://localhost:5000/agri_business', { headers });
+        const response = await axios.get('/api/agri_business/', { headers });
         setViewFPOList(response.data);
       } catch (error) {
         console.error('Error fetching FPOs:', error);
@@ -196,7 +196,7 @@ const invalidEntries = entries.filter(entry => {
     try {
       const token = localStorage.getItem('token');
       const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
-      const response = await axios.get(`http://localhost:5000/agri_business/${fpo.fpo_id}`, { headers });
+      const response = await axios.get(`/api/agri_business/${fpo.fpo_id}`, { headers });
       setAgriData(response.data);
       toast.success(`Loaded data for ${fpo.name}`);
     } catch (error) {

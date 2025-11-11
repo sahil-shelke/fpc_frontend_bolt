@@ -35,6 +35,7 @@ const StaffEditTab: React.FC<StaffEditTabProps> = ({ fpoId }) => {
   const { register, handleSubmit, reset, formState: { errors, dirtyFields } } = useForm<StaffFormData>({
     defaultValues: {
       fpo_id: fpoId,
+      name: '',
       gender: 'm',
       designation: 'staff',
       education_qualification: 'secondary'
@@ -49,7 +50,7 @@ const StaffEditTab: React.FC<StaffEditTabProps> = ({ fpoId }) => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`http://localhost:5000/staff/${fpoId}`, {
+      const response = await axios.get(`/api/staff/${fpoId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       setStaffMembers(response.data || []);
@@ -108,7 +109,7 @@ const StaffEditTab: React.FC<StaffEditTabProps> = ({ fpoId }) => {
       if (showAddForm) {
         // Create new staff member
         await axios.post(
-          'http://localhost:5000/staff/',
+          '/api/staff/',
           data,
           {
             headers: { 'Authorization': `Bearer ${token}` }
@@ -136,7 +137,7 @@ if (Object.keys(changedFields).length <= 2) {
 
 
         await axios.put(
-          `http://localhost:5000/staff/${editingPhone}`,
+          `/api/staff/${editingPhone}`,
           changedFields,
           {
             headers: { 'Authorization': `Bearer ${token}` }

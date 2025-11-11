@@ -8,6 +8,8 @@ import FinancialEditTab from './EditTabs/FinancialEditTab';
 import LicenseEditTab from './EditTabs/LicenseEditTab';
 import TrainingEditTab from './EditTabs/TrainingEditTab';
 import FPOEditTab from './EditTabs/FPOEditTab';
+import FacilitiesEditTab from './EditTabs/FacilityEditTab';
+import BODEditTab from './EditTabs/BODEditTab';
 
 interface EditModalProps {
   isOpen: boolean;
@@ -16,7 +18,7 @@ interface EditModalProps {
   fpoName: string;
 }
 
-type TabType = 'fpo' | 'shareholders' | 'staff' | 'compliance' | 'donors' | 'financial' | 'licenses' | 'trainings';
+type TabType = 'fpo' | 'bod' | 'shareholders' | 'staff' | 'compliance' | 'donors' | 'financial' | 'licenses' | 'trainings' | 'facilities';
 
 const EditModal: React.FC<EditModalProps> = ({ isOpen, onClose, fpoId, fpoName }) => {
   const [activeTab, setActiveTab] = useState<TabType>('fpo');
@@ -25,6 +27,7 @@ const EditModal: React.FC<EditModalProps> = ({ isOpen, onClose, fpoId, fpoName }
 
   const tabs = [
     { id: 'fpo' as TabType, label: 'FPO', icon: Users },
+    { id: 'bod' as TabType, label: 'BOD', icon: Users },
     { id: 'shareholders' as TabType, label: 'Shareholders', icon: Users },
     { id: 'staff' as TabType, label: 'Staff', icon: UserPlus },
     { id: 'compliance' as TabType, label: 'Compliance', icon: FileCheck },
@@ -32,6 +35,7 @@ const EditModal: React.FC<EditModalProps> = ({ isOpen, onClose, fpoId, fpoName }
     { id: 'financial' as TabType, label: 'Financial', icon: DollarSign },
     { id: 'licenses' as TabType, label: 'Licenses', icon: FileText },
     { id: 'trainings' as TabType, label: 'Trainings', icon: BookOpen },
+    { id: 'facilities' as TabType, label: 'Facilities', icon: Users },
   ];
 
   return (
@@ -53,15 +57,15 @@ const EditModal: React.FC<EditModalProps> = ({ isOpen, onClose, fpoId, fpoName }
         </div>
 
         {/* Tabs */}
-        <div className="border-b border-gray-200 px-6 bg-gray-50 overflow-x-auto">
-          <div className="flex space-x-1 min-w-max">
+        <div className="border-b border-gray-200 bg-gray-50 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 flex-shrink-0">
+          <div className="flex space-x-1 min-w-max px-6 h-12">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors flex items-center whitespace-nowrap ${
+                  className={`px-4 h-full text-sm font-medium border-b-2 transition-colors flex items-center whitespace-nowrap flex-shrink-0 ${
                     activeTab === tab.id
                       ? 'border-primary-600 text-primary-600 bg-white'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -78,6 +82,7 @@ const EditModal: React.FC<EditModalProps> = ({ isOpen, onClose, fpoId, fpoName }
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-6">
           {activeTab === 'fpo' && <FPOEditTab fpoId={fpoId} />}
+          {activeTab === 'bod' && <BODEditTab fpoId={fpoId} />}
           {activeTab === 'shareholders' && <ShareholdersEditTab fpoId={fpoId} />}
           {activeTab === 'staff' && <StaffEditTab fpoId={fpoId} />}
           {activeTab === 'compliance' && <ComplianceEditTab fpoId={fpoId} />}
@@ -85,6 +90,7 @@ const EditModal: React.FC<EditModalProps> = ({ isOpen, onClose, fpoId, fpoName }
           {activeTab === 'financial' && <FinancialEditTab fpoId={fpoId} />}
           {activeTab === 'licenses' && <LicenseEditTab fpoId={fpoId} />}
           {activeTab === 'trainings' && <TrainingEditTab fpoId={fpoId} />}
+          {activeTab === 'facilities' && <FacilitiesEditTab fpoId={fpoId} />}
         </div>
 
         {/* Footer */}

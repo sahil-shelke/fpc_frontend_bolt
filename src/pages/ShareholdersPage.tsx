@@ -47,7 +47,7 @@ const ShareholdersPage: React.FC = () => {
     const fetchFPOs = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:5000/fpo/approved', {
+        const response = await axios.get('/api/fpo/approved', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         setFpos(response.data);
@@ -74,7 +74,7 @@ const ShareholdersPage: React.FC = () => {
       }
       setLoading(true);
       const token = localStorage.getItem('token');
-      const response = await axios.get(`http://localhost:5000/shareholder/${fpo_id}`, {
+      const response = await axios.get(`/api/shareholder/${fpo_id}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       setShareholders(response.data);
@@ -96,11 +96,15 @@ const ShareholdersPage: React.FC = () => {
       }
 
       if (editingId) {
-        await axios.put(`http://localhost:5000/shareholder/${editingId}`, data);
+        await axios.put(`/api/shareholder/${editingId}`, data);
         toast.success('Shareholder updated successfully!');
         setEditingId(null);
       } else {
-        await axios.post('http://localhost:5000/shareholder/', data);
+        const payload = {
+          ...data, 
+          fpo_id
+        }
+        await axios.post('/api/shareholder/', payload);
         toast.success('Shareholder created successfully!');
       }
       reset();
@@ -127,7 +131,7 @@ const ShareholdersPage: React.FC = () => {
   const handleDelete = async (id: number) => {
     if (window.confirm('Are you sure you want to delete this shareholder?')) {
       try {
-        await axios.delete(`http://localhost:5000/shareholder/${id}`);
+        await axios.delete(`/api/shareholder/${id}`);
         toast.success('Shareholder deleted successfully!');
         fetchShareholders();
       } catch (error) {

@@ -69,7 +69,7 @@ const FPOEditTab: React.FC<FPOEditTabProps> = ({ fpoId }) => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`http://localhost:5000/fpo/${fpoId}`, {
+      const response = await axios.get(`/api/fpo/${fpoId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = response.data;
@@ -93,7 +93,7 @@ const FPOEditTab: React.FC<FPOEditTabProps> = ({ fpoId }) => {
   const fetchDistricts = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/districts/districts', {
+      const response = await axios.get('/api/districts/districts', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       setDistricts(response.data);
@@ -139,7 +139,7 @@ const FPOEditTab: React.FC<FPOEditTabProps> = ({ fpoId }) => {
         return;
       }
 
-      await axios.put(`http://localhost:5000/fpo/${fpoId}`, changedData, {
+      await axios.put(`/api/fpo/${fpoId}`, changedData, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -436,112 +436,117 @@ const FPOEditTab: React.FC<FPOEditTabProps> = ({ fpoId }) => {
           </div>
         </form>
       ) : (
-        <div className="space-y-6">
-          <div>
-            <h4 className="text-sm font-semibold text-gray-700 mb-3">Basic Information</h4>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="space-y-5">
+          {/* Basic Information */}
+          <div className="bg-white border border-gray-200 rounded-lg p-5">
+            <h4 className="text-sm font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">Basic Information</h4>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4">
               <div>
-                <p className="text-sm text-gray-500">FPC Name</p>
+                <p className="text-xs text-gray-500 mb-1">FPC Name</p>
                 <p className="font-medium text-gray-900">{fpoData.name}</p>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <p className="text-sm text-gray-500">State</p>
-                  <p className="font-medium text-gray-900">
-                    {(() => {
-                      const state = districts.find(d => d.state_code === fpoData.state_code);
-                      return state ? `${state.state_name}` : 'N/A';
-                    })()}
-                  </p>
-                </div>
-
-                <div>
-                  <p className="text-sm text-gray-500">District</p>
-                  <p className="font-medium text-gray-900">
-                    {(() => {
-                      const district = districts.find(d => d.district_code === fpoData.district_code);
-                      return district ? `${district.district_name}` : 'N/A';
-                    })()}
-                  </p>
-                </div>
-              </div>
-
-            </div>
-          </div>
-
-          <div>
-            <h4 className="text-sm font-semibold text-gray-700 mb-3">Registration Details</h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <p className="text-sm text-gray-500">Registration Number</p>
-                <p className="font-medium text-gray-900">{fpoData.fpc_registration_number}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Registration Date</p>
+                <p className="text-xs text-gray-500 mb-1">State</p>
                 <p className="font-medium text-gray-900">
-                  {new Date(fpoData.registration_date).toLocaleDateString()}
+                  {(() => {
+                    const state = districts.find(d => d.state_code === fpoData.state_code);
+                    return state ? state.state_name : 'N/A';
+                  })()}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-500 mb-1">District</p>
+                <p className="font-medium text-gray-900">
+                  {(() => {
+                    const district = districts.find(d => d.district_code === fpoData.district_code);
+                    return district ? district.district_name : 'N/A';
+                  })()}
                 </p>
               </div>
             </div>
           </div>
 
-          <div>
-            <h4 className="text-sm font-semibold text-gray-700 mb-3">Legal Information</h4>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Registration Details */}
+          <div className="bg-white border border-gray-200 rounded-lg p-5">
+            <h4 className="text-sm font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">Registration Details</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
               <div>
-                <p className="text-sm text-gray-500">PAN Number</p>
+                <p className="text-xs text-gray-500 mb-1">Registration Number</p>
+                <p className="font-medium text-gray-900">{fpoData.fpc_registration_number}</p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-500 mb-1">Registration Date</p>
+                <p className="font-medium text-gray-900">
+                  {new Date(fpoData.registration_date).toLocaleDateString('en-IN', {
+                    day: 'numeric',
+                    month: 'numeric',
+                    year: 'numeric'
+                  })}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Legal Information */}
+          <div className="bg-white border border-gray-200 rounded-lg p-5">
+            <h4 className="text-sm font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">Legal Information</h4>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4">
+              <div>
+                <p className="text-xs text-gray-500 mb-1">PAN Number</p>
                 <p className="font-medium text-gray-900">{fpoData.pan}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-500">TAN Number</p>
+                <p className="text-xs text-gray-500 mb-1">TAN Number</p>
                 <p className="font-medium text-gray-900">{fpoData.tan}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-500">GST Number</p>
+                <p className="text-xs text-gray-500 mb-1">GST Number</p>
                 <p className="font-medium text-gray-900">{fpoData.gst_number}</p>
               </div>
             </div>
           </div>
 
-          <div>
-            <h4 className="text-sm font-semibold text-gray-700 mb-3">Address Information</h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Address Information */}
+          <div className="bg-white border border-gray-200 rounded-lg p-5">
+            <h4 className="text-sm font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">Address Information</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
               <div>
-                <p className="text-sm text-gray-500">Registered Company Address</p>
+                <p className="text-xs text-gray-500 mb-1">Registered Company Address</p>
                 <p className="font-medium text-gray-900">{fpoData.registered_company_address}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-500">Office Address</p>
+                <p className="text-xs text-gray-500 mb-1">Office Address</p>
                 <p className="font-medium text-gray-900">{fpoData.office_address}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-500">Office Block</p>
+                <p className="text-xs text-gray-500 mb-1">Office Block</p>
                 <p className="font-medium text-gray-900">{fpoData.office_block}</p>
               </div>
             </div>
           </div>
 
-          <div>
-            <h4 className="text-sm font-semibold text-gray-700 mb-3">Contact Information</h4>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Contact Information */}
+          <div className="bg-white border border-gray-200 rounded-lg p-5">
+            <h4 className="text-sm font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">Contact Information</h4>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4">
               <div>
-                <p className="text-sm text-gray-500">Contact Person</p>
+                <p className="text-xs text-gray-500 mb-1">Contact Person</p>
                 <p className="font-medium text-gray-900">{fpoData.office_contact_name}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-500">Contact Phone</p>
+                <p className="text-xs text-gray-500 mb-1">Contact Phone</p>
                 <p className="font-medium text-gray-900">{fpoData.office_contact_number}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-500">Contact Email</p>
+                <p className="text-xs text-gray-500 mb-1">Contact Email</p>
                 <p className="font-medium text-gray-900">{fpoData.office_contact_email}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-500">WOTR Staff Phone</p>
+                <p className="text-xs text-gray-500 mb-1">WOTR Staff Phone</p>
                 <p className="font-medium text-gray-900">{fpoData.responsible_wotr_staff_phone}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-500">Project Manager Phone</p>
+                <p className="text-xs text-gray-500 mb-1">Project Manager Phone</p>
                 <p className="font-medium text-gray-900">{fpoData.project_manager_phone}</p>
               </div>
             </div>

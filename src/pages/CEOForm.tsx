@@ -30,7 +30,7 @@ const CEOForm: React.FC = () => {
 
   const fetchCEOs = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/ceo_details/');
+      const response = await axios.get('/api/ceo_details/');
       setCeos(response.data);
     } catch (error) {
       toast.error('Failed to fetch CEO details');
@@ -39,7 +39,7 @@ const CEOForm: React.FC = () => {
 
   const fetchFPOs = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/fpo/');
+      const response = await axios.get('/api/fpo/');
       setFpos(response.data);
     } catch (error) {
       toast.error('Failed to fetch FPOs');
@@ -50,11 +50,11 @@ const CEOForm: React.FC = () => {
     setLoading(true);
     try {
       if (editingId) {
-        await axios.put(`http://localhost:5000/ceo_details/${editingId}`, data);
+        await axios.put(`/api/ceo_details/${editingId}`, data);
         toast.success('CEO details updated successfully!');
         setEditingId(null);
       } else {
-        await axios.post('http://localhost:5000/ceo_details/', data);
+        await axios.post('/api/ceo_details/', data);
         toast.success('CEO details created successfully!');
       }
       reset();
@@ -77,7 +77,7 @@ const CEOForm: React.FC = () => {
   const handleDelete = async (id: number) => {
     if (window.confirm('Are you sure you want to delete this CEO record?')) {
       try {
-        await axios.delete(`http://localhost:5000/ceo_details/${id}`);
+        await axios.delete(`/api/ceo_details/${id}`);
         toast.success('CEO record deleted successfully!');
         fetchCEOs();
       } catch (error) {

@@ -49,7 +49,7 @@ const AgribusinessOfficers: React.FC = () => {
   const fetchOfficers = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/agri_business/agri_business_officers', {
+      const response = await axios.get('/api/agri_business/agri_business_officers', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -63,7 +63,7 @@ const AgribusinessOfficers: React.FC = () => {
   const fetchDistricts = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/districts/districts', {
+      const response = await axios.get('/api/districts/districts', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -105,12 +105,12 @@ const onSubmit = async (data: AgribusinessOfficerData) => {
     }
 
     if (editingPhone) {
-      await axios.put(`http://localhost:5000/agri_business/${editingPhone}`, payloadToSend, { headers });
+      await axios.put(`/api/agri_business/${editingPhone}`, payloadToSend, { headers });
       toast.success('Agribusiness Officer updated successfully!');
       setEditingPhone(null);
       setOriginalData(null);
     } else {
-      await axios.post('http://localhost:5000/agri_business/create_agri_business_officer', finalData, { headers });
+      await axios.post('/api/agri_business/create_agri_business_officer', finalData, { headers });
       toast.success('Agribusiness Officer created successfully!');
     }
 
@@ -161,7 +161,7 @@ const handleEdit = (officer: any) => {
     if (window.confirm('Are you sure you want to delete this Agribusiness Officer?')) {
       try {
         const token = localStorage.getItem('token');
-        await axios.delete(`http://localhost:5000/pm/${phone_number}`, {
+        await axios.delete(`/api/pm/${phone_number}`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }

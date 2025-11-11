@@ -55,7 +55,7 @@ const DonorEditTab: React.FC<DonorEditTabProps> = ({ fpoId }) => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`http://localhost:5000/donor/${fpoId}`, {
+      const response = await axios.get(`/api/donor/${fpoId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       setDonors(response.data || []);
@@ -106,7 +106,7 @@ const DonorEditTab: React.FC<DonorEditTabProps> = ({ fpoId }) => {
 
       if (showAddForm) {
         await axios.post(
-          'http://localhost:5000/donor/',
+          '/api/donor/',
           data,
           {
             headers: { 'Authorization': `Bearer ${token}` }
@@ -115,7 +115,7 @@ const DonorEditTab: React.FC<DonorEditTabProps> = ({ fpoId }) => {
         toast.success('Donor record created successfully!');
       } else if (editingId) {
         await axios.put(
-          `http://localhost:5000/donor/${editingId}`,
+          `/api/donor/${editingId}`,
           data,
           {
             headers: { 'Authorization': `Bearer ${token}` }

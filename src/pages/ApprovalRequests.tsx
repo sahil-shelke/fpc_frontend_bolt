@@ -55,7 +55,7 @@ const ApprovalRequests: React.FC = () => {
   const fetchPendingRequests = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/fpo/pending', {
+      const response = await axios.get('/api/fpo/pending', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -79,7 +79,7 @@ const ApprovalRequests: React.FC = () => {
         ? { fpo_id: fpoId }
         : { fpo_id: fpoId, comment: comments };
       
-      await axios.post(`http://localhost:5000${endpoint}`, 
+      await axios.post(`/api${endpoint}`, 
         payload,
         {
           headers: {

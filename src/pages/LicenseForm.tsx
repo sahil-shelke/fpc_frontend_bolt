@@ -29,7 +29,7 @@ const LicenseForm: React.FC = () => {
     const fetchFPOs = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:5000/fpo/approved', {
+        const response = await axios.get('/api/fpo/approved', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         setFpos(response.data);
@@ -49,7 +49,7 @@ const LicenseForm: React.FC = () => {
 
   const fetchLicenses = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/licenses/${fpo_id}`);
+      const response = await axios.get(`/api/licenses/${fpo_id}`);
       setLicenses(response.data);
     } catch (error) {
       toast.error('Failed to fetch licenses');
@@ -70,11 +70,15 @@ const LicenseForm: React.FC = () => {
       console.log('Updated License ID:', editingId);
       
       if (editingId) {
-        await axios.put(`http://localhost:5000/licenses/${editingId}`, processedData);
+        await axios.put(`/api/licenses/${editingId}`, processedData);
         toast.success('License updated successfully!');
         setEditingId(null);
       } else {
-        await axios.post('http://localhost:5000/licenses/', processedData);
+        const payload = {
+          ...data, 
+          fpo_id
+        }
+        await axios.post('/api/licenses/', payload);
         toast.success('License created successfully!');
       }
       reset();
@@ -100,7 +104,7 @@ const LicenseForm: React.FC = () => {
   const handleDelete = async (id: number) => {
     if (window.confirm('Are you sure you want to delete this license?')) {
       try {
-        await axios.delete(`http://localhost:5000/licenses/${id}`);
+        await axios.delete(`/api/licenses/${id}`);
         toast.success('License deleted successfully!');
         fetchLicenses();
       } catch (error) {

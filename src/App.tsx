@@ -25,6 +25,7 @@ import TrainingsPage from './pages/TrainingsPage';
 import DonorsPage from './pages/DonorsPage';
 import Agribusiness from './pages/Agribusiness';
 import AgribusinessOfficer from './pages/AgribusinessOfficer';
+import FacilitiesPage from './pages/FacilitiesPage';
 
 
 function App() {
@@ -57,6 +58,7 @@ function App() {
               <Route path="donors" element={<DonorsPage />} />
               <Route path="agribusiness" element={<Agribusiness />} />
               <Route path="agribusiness-officer" element={<AgribusinessOfficer />} />
+              <Route path="facilities" element={<FacilitiesPage />} />
 
             </Route>
           </Routes>

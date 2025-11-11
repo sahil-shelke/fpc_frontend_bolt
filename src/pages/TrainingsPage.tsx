@@ -68,7 +68,7 @@ const TrainingsPage: React.FC = () => {
     const fetchFPOs = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:5000/fpo/approved', {
+        const response = await axios.get('/api/fpo/approved', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         setFpos(response.data);
@@ -89,7 +89,7 @@ const TrainingsPage: React.FC = () => {
   const fetchTrainings = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`http://localhost:5000/training/fpo/${fpo_id}`, {
+      const response = await axios.get(`/api/training/fpo/${fpo_id}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -119,7 +119,7 @@ const TrainingsPage: React.FC = () => {
       const payload = {
         ...data,
         training_name: finalTrainingName,
-        fpo_id: Number(data.fpo_id),
+        fpo_id,
         fpo_attendees: Number(data.fpo_attendees) || 0,
         board_attendees: Number(data.board_attendees) || 0,
         ceo_attendees: Number(data.ceo_attendees) || 0,
@@ -127,7 +127,7 @@ const TrainingsPage: React.FC = () => {
       };
 
       if (editingId) {
-        await axios.put(`http://localhost:5000/training/${editingId}`, payload, {
+        await axios.put(`/api/training/${editingId}`, payload, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -135,7 +135,7 @@ const TrainingsPage: React.FC = () => {
         toast.success('Training updated successfully!');
         setEditingId(null);
       } else {
-        await axios.post('http://localhost:5000/training/', payload, {
+        await axios.post('/api/training/', payload, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -199,7 +199,7 @@ const TrainingsPage: React.FC = () => {
     if (window.confirm('Are you sure you want to delete this training record?')) {
       try {
         const token = localStorage.getItem('token');
-        await axios.delete(`http://localhost:5000/training/${id}`, {
+        await axios.delete(`/api/training/${id}`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }

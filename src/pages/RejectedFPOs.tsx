@@ -49,7 +49,7 @@ const RejectedFPOs: React.FC = () => {
   const fetchRejectedFPOs = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/approval/rejected_fpos', {
+      const response = await axios.get('/api/approval/rejected_fpos', {
         headers: {
           'Authorization': `Bearer ${token}`
         }

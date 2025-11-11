@@ -80,7 +80,7 @@ const MyRequests: React.FC = () => {
   const fetchUserAuth = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/user/auth', {
+      const response = await axios.get('/api/user/auth', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -95,7 +95,7 @@ const MyRequests: React.FC = () => {
   const fetchDistricts = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/districts/districts', {
+      const response = await axios.get('/api/districts/districts', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -112,7 +112,7 @@ const MyRequests: React.FC = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/fpo/approved', {
+      const response = await axios.get('/api/fpo/approved', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -146,7 +146,7 @@ const MyRequests: React.FC = () => {
     if (window.confirm('Are you sure you want to delete this FPO? This action cannot be undone.')) {
       try {
         const token = localStorage.getItem('token');
-        await axios.delete(`http://localhost:5000/fpo/${fpoId}`, {
+        await axios.delete(`/api/fpo/${fpoId}`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }

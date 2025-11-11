@@ -59,7 +59,7 @@ const ComplianceEditTab: React.FC<ComplianceEditTabProps> = ({ fpoId }) => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`http://localhost:5000/fpc_compliance/${fpoId}`, {
+      const response = await axios.get(`/api/fpc_compliance/${fpoId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       setCompliances(response.data || []);
@@ -125,7 +125,7 @@ const ComplianceEditTab: React.FC<ComplianceEditTabProps> = ({ fpoId }) => {
 
       if (showAddForm) {
         await axios.post(
-          'http://localhost:5000/fpc_compliance/',
+          '/api/fpc_compliance/',
           data,
           {
             headers: { 'Authorization': `Bearer ${token}` }
@@ -150,7 +150,7 @@ const ComplianceEditTab: React.FC<ComplianceEditTabProps> = ({ fpoId }) => {
         changedFields.fpo_id = fpoId;
 
         await axios.put(
-          `http://localhost:5000/fpc_compliance/${editingId}`,
+          `/api/fpc_compliance/${editingId}`,
           changedFields,
           {
             headers: { 'Authorization': `Bearer ${token}` }

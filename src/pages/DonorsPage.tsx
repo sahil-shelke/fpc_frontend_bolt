@@ -40,7 +40,7 @@ const DonorsPage: React.FC = () => {
     const fetchFPOs = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:5000/fpo/approved', {
+        const response = await axios.get('/api/fpo/approved', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         setFpos(response.data);
@@ -60,7 +60,7 @@ const DonorsPage: React.FC = () => {
   const fetchDonors = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`http://localhost:5000/donor/${fpo_id}`, {
+      const response = await axios.get(`/api/donor/${fpo_id}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const donorsData = Array.isArray(response.data) ? response.data : [];
@@ -82,12 +82,16 @@ const DonorsPage: React.FC = () => {
       };
 
       if (editingDonor) {
-        await axios.put(`http://localhost:5000/donor/${editingDonor.id}`, payload, {
+        await axios.put(`/api/donor/${editingDonor.id}`, payload, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         toast.success('Donor updated successfully!');
       } else {
-        await axios.post('http://localhost:5000/donor/', payload, {
+        const payload = {
+          ...data,
+          fpo_id
+        }
+        await axios.post('/api/donor/', payload, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         toast.success('Donor added successfully!');
@@ -116,7 +120,7 @@ const DonorsPage: React.FC = () => {
     if (window.confirm('Are you sure you want to delete this donor record?')) {
       try {
         const token = localStorage.getItem('token');
-        await axios.delete(`http://localhost:5000/donor/${id}`, {
+        await axios.delete(`/api/donor/${id}`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         toast.success('Donor deleted successfully!');

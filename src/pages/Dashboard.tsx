@@ -79,11 +79,12 @@ const fetchAnnualAgriStats = async (year: string) => {
   try {
     const token = localStorage.getItem('token');
     const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
-    const response = await axios.get(`http://localhost:5000/dashboard/agri_business_annual_stats/`, {
+    const response = await axios.get(`/api/dashboard/agri_business_annual_stats`, {
       headers,
       params: { fy_year: year }
     });
     setAnnualStats(response.data);
+    console.log(response.data)
   } catch (error) {
     console.error('Error fetching annual agribusiness stats:', error);
     toast.error('Failed to load annual statistics');
@@ -107,7 +108,7 @@ const fetchAnnualAgriStats = async (year: string) => {
       if (user?.role === 'super_admin') {
         try {
           // Fetch approved FPCs count
-          const approvedResponse = await axios.get('http://localhost:5000/fpo/approved', { headers });
+          const approvedResponse = await axios.get('/api/fpo/approved', { headers });
           approvedRequests = approvedResponse.data.length;
           totalFPCs = approvedRequests; // Total FPCs = Approved FPCs for now
         } catch (error) {
@@ -116,7 +117,7 @@ const fetchAnnualAgriStats = async (year: string) => {
 
         try {
           // Fetch pending FPCs count
-          const pendingResponse = await axios.get('http://localhost:5000/fpo/pending', { headers });
+          const pendingResponse = await axios.get('/api/fpo/pending', { headers });
           pendingRequests = pendingResponse.data.length;
           // Add pending to total count
           totalFPCs += pendingRequests;
@@ -126,7 +127,7 @@ const fetchAnnualAgriStats = async (year: string) => {
       } else {
         // For other roles, try to fetch FPOs
         try {
-          const fpoResponse = await axios.get('http://localhost:5000/fpo/approved', { headers });
+          const fpoResponse = await axios.get('/api/fpo/approved', { headers });
           totalFPCs = fpoResponse.data.length;
           approvedRequests = totalFPCs;
         } catch (error) {
@@ -139,10 +140,10 @@ const fetchAnnualAgriStats = async (year: string) => {
       if (user?.role === 'fpc_user' || user?.role === 'super_admin') {
         try {
           const [shareholderRes, ceoRes, licenseRes, financialRes] = await Promise.allSettled([
-            axios.get('http://localhost:5000/shareholder/', { headers }),
-            axios.get('http://localhost:5000/ceo_details/', { headers }),
-            axios.get('http://localhost:5000/licenses/', { headers }),
-            axios.get('http://localhost:5000/financial_details/', { headers })
+            axios.get('/api/shareholder/', { headers }),
+            axios.get('/api/ceo_details/', { headers }),
+            axios.get('/api/licenses/', { headers }),
+            axios.get('/api/financial_details/', { headers })
           ]);
 
           additionalStats = {

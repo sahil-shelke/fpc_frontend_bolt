@@ -56,7 +56,7 @@ const ShareholdersEditTab: React.FC<ShareholdersEditTabProps> = ({ fpoId }) => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`http://localhost:5000/shareholder/${fpoId}`, {
+      const response = await axios.get(`/api/shareholder/${fpoId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       setShareholders(response.data || []);
@@ -115,7 +115,7 @@ const ShareholdersEditTab: React.FC<ShareholdersEditTabProps> = ({ fpoId }) => {
       if (showAddForm) {
         // Create new shareholder
         await axios.post(
-          'http://localhost:5000/shareholder/',
+          '/api/shareholder/',
           data,
           {
             headers: { 'Authorization': `Bearer ${token}` }
@@ -141,7 +141,7 @@ if (Object.keys(changedFields).length <= 2) {
 }
 
         await axios.put(
-          `http://localhost:5000/shareholder/${editingId}`,
+          `/api/shareholder/${editingId}`,
           changedFields,
           {
             headers: { 'Authorization': `Bearer ${token}` }
