@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { useAuth } from '../contexts/AuthContext';
 import toast from 'react-hot-toast';
 import axios from 'axios';
-import { Save, Building2, Upload, X, FileText, Image } from 'lucide-react';
+import { Save, Building2, Upload, X, FileText, Image, Eye } from 'lucide-react';
 
 interface CreateFPCRequestData {
   name: string;
@@ -73,6 +73,7 @@ const CreateFPCRequest: React.FC = () => {
   const [panFile, setPanFile] = useState<File | null>(null);
   const [tanFile, setTanFile] = useState<File | null>(null);
   const [gstFile, setGstFile] = useState<File | null>(null);
+  const [previewFile, setPreviewFile] = useState<{ file: File; url: string; type: string } | null>(null);
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<CreateFPCRequestData>();
 
@@ -165,6 +166,19 @@ const CreateFPCRequest: React.FC = () => {
       return <FileText className="h-5 w-5 text-red-600" />;
     }
     return <Image className="h-5 w-5 text-blue-600" />;
+  };
+
+  const openPreview = (file: File) => {
+    const url = URL.createObjectURL(file);
+    const type = file.type;
+    setPreviewFile({ file, url, type });
+  };
+
+  const closePreview = () => {
+    if (previewFile) {
+      URL.revokeObjectURL(previewFile.url);
+    }
+    setPreviewFile(null);
   };
 
   const onSubmit = async (data: CreateFPCRequestData) => {
@@ -591,17 +605,28 @@ const CreateFPCRequest: React.FC = () => {
                       <div className="flex items-center space-x-2">
                         {getFileIcon(panFile)}
                         <div className="flex items-center space-x-2">
-                          <p className="text-sm font-medium text-gray-900 truncate max-w-[200px]">{panFile.name}</p>
+                          <p className="text-sm font-medium text-gray-900 truncate max-w-[150px]">{panFile.name}</p>
                           <span className="text-xs text-gray-500">({(panFile.size / 1024).toFixed(2)} KB)</span>
                         </div>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => removeFile(setPanFile, 'pan-upload')}
-                        className="p-1 hover:bg-green-100 rounded-full transition-colors"
-                      >
-                        <X className="h-4 w-4 text-gray-600" />
-                      </button>
+                      <div className="flex items-center space-x-1">
+                        <button
+                          type="button"
+                          onClick={() => openPreview(panFile)}
+                          className="p-1 hover:bg-green-100 rounded-full transition-colors"
+                          title="Preview document"
+                        >
+                          <Eye className="h-4 w-4 text-blue-600" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => removeFile(setPanFile, 'pan-upload')}
+                          className="p-1 hover:bg-green-100 rounded-full transition-colors"
+                          title="Remove document"
+                        >
+                          <X className="h-4 w-4 text-gray-600" />
+                        </button>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -645,17 +670,28 @@ const CreateFPCRequest: React.FC = () => {
                       <div className="flex items-center space-x-2">
                         {getFileIcon(tanFile)}
                         <div className="flex items-center space-x-2">
-                          <p className="text-sm font-medium text-gray-900 truncate max-w-[200px]">{tanFile.name}</p>
+                          <p className="text-sm font-medium text-gray-900 truncate max-w-[150px]">{tanFile.name}</p>
                           <span className="text-xs text-gray-500">({(tanFile.size / 1024).toFixed(2)} KB)</span>
                         </div>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => removeFile(setTanFile, 'tan-upload')}
-                        className="p-1 hover:bg-green-100 rounded-full transition-colors"
-                      >
-                        <X className="h-4 w-4 text-gray-600" />
-                      </button>
+                      <div className="flex items-center space-x-1">
+                        <button
+                          type="button"
+                          onClick={() => openPreview(tanFile)}
+                          className="p-1 hover:bg-green-100 rounded-full transition-colors"
+                          title="Preview document"
+                        >
+                          <Eye className="h-4 w-4 text-blue-600" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => removeFile(setTanFile, 'tan-upload')}
+                          className="p-1 hover:bg-green-100 rounded-full transition-colors"
+                          title="Remove document"
+                        >
+                          <X className="h-4 w-4 text-gray-600" />
+                        </button>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -699,17 +735,28 @@ const CreateFPCRequest: React.FC = () => {
                       <div className="flex items-center space-x-2">
                         {getFileIcon(gstFile)}
                         <div className="flex items-center space-x-2">
-                          <p className="text-sm font-medium text-gray-900 truncate max-w-[200px]">{gstFile.name}</p>
+                          <p className="text-sm font-medium text-gray-900 truncate max-w-[150px]">{gstFile.name}</p>
                           <span className="text-xs text-gray-500">({(gstFile.size / 1024).toFixed(2)} KB)</span>
                         </div>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => removeFile(setGstFile, 'gst-upload')}
-                        className="p-1 hover:bg-green-100 rounded-full transition-colors"
-                      >
-                        <X className="h-4 w-4 text-gray-600" />
-                      </button>
+                      <div className="flex items-center space-x-1">
+                        <button
+                          type="button"
+                          onClick={() => openPreview(gstFile)}
+                          className="p-1 hover:bg-green-100 rounded-full transition-colors"
+                          title="Preview document"
+                        >
+                          <Eye className="h-4 w-4 text-blue-600" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => removeFile(setGstFile, 'gst-upload')}
+                          className="p-1 hover:bg-green-100 rounded-full transition-colors"
+                          title="Remove document"
+                        >
+                          <X className="h-4 w-4 text-gray-600" />
+                        </button>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -747,6 +794,47 @@ const CreateFPCRequest: React.FC = () => {
           </div>
         </form>
       </div>
+
+      {previewFile && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75" onClick={closePreview}>
+          <div className="relative max-w-5xl max-h-[90vh] w-full mx-4" onClick={(e) => e.stopPropagation()}>
+            <div className="bg-white rounded-lg shadow-xl overflow-hidden">
+              <div className="flex items-center justify-between p-4 border-b bg-gray-50">
+                <div className="flex items-center space-x-3">
+                  {getFileIcon(previewFile.file)}
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">Document Preview</h3>
+                    <p className="text-sm text-gray-600">{previewFile.file.name}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={closePreview}
+                  className="p-2 hover:bg-gray-200 rounded-full transition-colors"
+                  title="Close preview"
+                >
+                  <X className="h-6 w-6 text-gray-600" />
+                </button>
+              </div>
+
+              <div className="overflow-auto max-h-[calc(90vh-80px)] bg-gray-100 flex items-center justify-center p-4">
+                {previewFile.type === 'application/pdf' ? (
+                  <iframe
+                    src={previewFile.url}
+                    className="w-full h-[calc(90vh-120px)] bg-white rounded"
+                    title="PDF Preview"
+                  />
+                ) : (
+                  <img
+                    src={previewFile.url}
+                    alt="Document preview"
+                    className="max-w-full max-h-full object-contain rounded"
+                  />
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
