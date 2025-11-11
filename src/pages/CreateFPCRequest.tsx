@@ -221,7 +221,7 @@ const CreateFPCRequest: React.FC = () => {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
           {/* Basic FPC Information */}
           <div className="space-y-4">
-            <h3 className="text-lg font-medium text-gray-900 border-b pb-2">Basic FPC Information</h3>
+            <h3 className="section-title">Basic FPC Information</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
@@ -280,7 +280,7 @@ const CreateFPCRequest: React.FC = () => {
 
           {/* BOD Member Information */}
           <div className="space-y-4">
-            <h3 className="text-lg font-medium text-gray-900 border-b pb-2">BOD Member Information</h3>
+            <h3 className="section-title">BOD Member Information</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
@@ -368,7 +368,7 @@ const CreateFPCRequest: React.FC = () => {
 
           {/* FPO Office Information */}
           <div className="space-y-4">
-            <h3 className="text-lg font-medium text-gray-900 border-b pb-2">FPO Office Information</h3>
+            <h3 className="section-title">FPO Office Information</h3>
             
             <div className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -486,7 +486,7 @@ const CreateFPCRequest: React.FC = () => {
 
           {/* Registration Documents */}
           <div className="space-y-4">
-            <h3 className="text-lg font-medium text-gray-900 border-b pb-2">Registration Documents</h3>
+            <h3 className="section-title">Registration Documents</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>

@@ -245,18 +245,16 @@ const ApprovalRequests: React.FC = () => {
 
       {/* Review Modal */}
       {showModal && selectedRequest && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b">
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold text-gray-900">Review FPO Request</h2>
-                <button
-                  onClick={() => setShowModal(false)}
-                  className="text-gray-400 hover:text-gray-600"
-                >
-                  <XCircle className="h-6 w-6" />
-                </button>
-              </div>
+        <div className="modal-overlay">
+          <div className="modal-container">
+            <div className="modal-header">
+              <h2 className="text-xl font-bold text-gray-900">Review FPO Request</h2>
+              <button
+                onClick={() => setShowModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <XCircle className="h-6 w-6" />
+              </button>
             </div>
 
             <div className="p-6 space-y-6">
@@ -391,7 +389,7 @@ const ApprovalRequests: React.FC = () => {
               </div>
             </div>
 
-            <div className="p-6 border-t bg-gray-50 flex justify-end space-x-4">
+            <div className="modal-footer">
               <button
                 onClick={() => setShowModal(false)}
                 className="btn-secondary"
@@ -401,7 +399,7 @@ const ApprovalRequests: React.FC = () => {
               </button>
               <button
                 onClick={() => handleApproval(selectedRequest.fpo_id, 'reject')}
-                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50 flex items-center space-x-2"
+                className="btn-danger disabled:opacity-50 flex items-center space-x-2"
                 disabled={actionLoading}
               >
                 <XCircle className="h-4 w-4" />
@@ -409,7 +407,7 @@ const ApprovalRequests: React.FC = () => {
               </button>
               <button
                 onClick={() => handleApproval(selectedRequest.fpo_id, 'approve')}
-                className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 flex items-center space-x-2"
+                className="btn-success disabled:opacity-50 flex items-center space-x-2"
                 disabled={actionLoading}
               >
                 <CheckCircle className="h-4 w-4" />

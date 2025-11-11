@@ -203,15 +203,15 @@ const fetchAnnualAgriStats = async (year: string) => {
           title: 'Active Licenses',
           value: stats.totalLicenses || 0,
           icon: FileText,
-          color: 'text-purple-600',
-          bgColor: 'bg-purple-100'
+          color: 'text-blue-600',
+          bgColor: 'bg-blue-100'
         },
         {
           title: 'Financial Records',
           value: stats.totalFinancialRecords || 0,
           icon: TrendingUp,
-          color: 'text-orange-600',
-          bgColor: 'bg-orange-100'
+          color: 'text-green-600',
+          bgColor: 'bg-green-100'
         }
       );
     }
@@ -239,8 +239,8 @@ const fetchAnnualAgriStats = async (year: string) => {
       title: 'Active Projects',
       value: stats.activeProjects,
       icon: TrendingUp,
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-100'
+      color: 'text-blue-600',
+      bgColor: 'bg-blue-100'
     });
 
     return baseCards;
@@ -313,7 +313,7 @@ const fetchAnnualAgriStats = async (year: string) => {
                 <p className="text-sm text-gray-600">View and manage all FPCs</p>
               </button>
               <button className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left">
-                <Users className="h-8 w-8 text-purple-600 mb-2" />
+                <Users className="h-8 w-8 text-blue-600 mb-2" />
                 <h3 className="font-medium text-gray-900">User Management</h3>
                 <p className="text-sm text-gray-600">Manage regional managers and users</p>
               </button>
@@ -333,7 +333,7 @@ const fetchAnnualAgriStats = async (year: string) => {
                 <p className="text-sm text-gray-600">Monitor status of submitted requests</p>
               </button>
               <button className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left">
-                <Users className="h-8 w-8 text-purple-600 mb-2" />
+                <Users className="h-8 w-8 text-blue-600 mb-2" />
                 <h3 className="font-medium text-gray-900">Manage Team</h3>
                 <p className="text-sm text-gray-600">Oversee project managers and FPCs</p>
               </button>
@@ -353,7 +353,7 @@ const fetchAnnualAgriStats = async (year: string) => {
                 <p className="text-sm text-gray-600">Create progress and status reports</p>
               </button>
               <button className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left">
-                <TrendingUp className="h-8 w-8 text-purple-600 mb-2" />
+                <TrendingUp className="h-8 w-8 text-blue-600 mb-2" />
                 <h3 className="font-medium text-gray-900">Performance</h3>
                 <p className="text-sm text-gray-600">Track FPC performance metrics</p>
               </button>
@@ -373,7 +373,7 @@ const fetchAnnualAgriStats = async (year: string) => {
                 <p className="text-sm text-gray-600">Handle shareholder and member data</p>
               </button>
               <button className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left">
-                <FileText className="h-8 w-8 text-purple-600 mb-2" />
+                <FileText className="h-8 w-8 text-blue-600 mb-2" />
                 <h3 className="font-medium text-gray-900">Financial & Compliance</h3>
                 <p className="text-sm text-gray-600">Track financial details and compliance status</p>
               </button>
