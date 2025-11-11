@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { useAuth } from '../contexts/AuthContext';
 import toast from 'react-hot-toast';
 import axios from 'axios';
-import { Save, Building2 } from 'lucide-react';
+import { Save, Building2, Upload, X, FileText, Image } from 'lucide-react';
 
 interface CreateFPCRequestData {
   name: string;
@@ -70,6 +70,9 @@ const CreateFPCRequest: React.FC = () => {
   const [districts, setDistricts] = useState<District[]>([]);
   const [selectedState, setSelectedState] = useState('');
   const [selectedStateCode, setSelectedStateCode] = useState<number | null>(null);
+  const [panFile, setPanFile] = useState<File | null>(null);
+  const [tanFile, setTanFile] = useState<File | null>(null);
+  const [gstFile, setGstFile] = useState<File | null>(null);
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<CreateFPCRequestData>();
 
@@ -121,6 +124,47 @@ const CreateFPCRequest: React.FC = () => {
       console.error('Error fetching districts:', error);
       toast.error('Failed to fetch districts');
     }
+  };
+
+  const handleFileChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    setFile: React.Dispatch<React.SetStateAction<File | null>>
+  ) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'application/pdf'];
+      const maxSize = 5 * 1024 * 1024;
+
+      if (!validTypes.includes(file.type)) {
+        toast.error('Please upload an image (JPG, PNG, GIF) or PDF file');
+        e.target.value = '';
+        return;
+      }
+
+      if (file.size > maxSize) {
+        toast.error('File size must be less than 5MB');
+        e.target.value = '';
+        return;
+      }
+
+      setFile(file);
+    }
+  };
+
+  const removeFile = (
+    setFile: React.Dispatch<React.SetStateAction<File | null>>,
+    inputId: string
+  ) => {
+    setFile(null);
+    const input = document.getElementById(inputId) as HTMLInputElement;
+    if (input) input.value = '';
+  };
+
+  const getFileIcon = (file: File) => {
+    if (file.type === 'application/pdf') {
+      return <FileText className="h-5 w-5 text-red-600" />;
+    }
+    return <Image className="h-5 w-5 text-blue-600" />;
   };
 
   const onSubmit = async (data: CreateFPCRequestData) => {
@@ -487,7 +531,7 @@ const CreateFPCRequest: React.FC = () => {
           {/* Registration Documents */}
           <div className="space-y-4">
             <h3 className="section-title">Registration Documents</h3>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="form-label">FPC Registration Number *</label>
@@ -509,10 +553,10 @@ const CreateFPCRequest: React.FC = () => {
                 {errors.registration_date && <p className="text-red-500 text-sm mt-1">{errors.registration_date.message}</p>}
               </div>
 
-              <div>
+              <div className="md:col-span-2">
                 <label className="form-label">PAN Number *</label>
                 <input
-                  {...register('pan', { 
+                  {...register('pan', {
                     required: 'PAN is required',
                     // pattern: { value: /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, message: 'Invalid PAN format' }
                   })}
@@ -523,10 +567,49 @@ const CreateFPCRequest: React.FC = () => {
                 {errors.pan && <p className="text-red-500 text-sm mt-1">{errors.pan.message}</p>}
               </div>
 
-              <div>
+              <div className="md:col-span-2">
+                <label className="form-label">Upload PAN Document</label>
+                <div className="space-y-2">
+                  {!panFile ? (
+                    <label htmlFor="pan-upload" className="flex items-center justify-center w-full px-4 py-8 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors">
+                      <div className="flex flex-col items-center space-y-2">
+                        <Upload className="h-8 w-8 text-gray-400" />
+                        <span className="text-sm text-gray-600">Click to upload PAN document</span>
+                        <span className="text-xs text-gray-500">Supports: JPG, PNG, GIF, PDF (Max 5MB)</span>
+                      </div>
+                      <input
+                        id="pan-upload"
+                        type="file"
+                        className="hidden"
+                        accept="image/jpeg,image/jpg,image/png,image/gif,application/pdf"
+                        onChange={(e) => handleFileChange(e, setPanFile)}
+                      />
+                    </label>
+                  ) : (
+                    <div className="flex items-center justify-between p-4 bg-gray-50 border border-gray-300 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        {getFileIcon(panFile)}
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">{panFile.name}</p>
+                          <p className="text-xs text-gray-500">{(panFile.size / 1024).toFixed(2)} KB</p>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removeFile(setPanFile, 'pan-upload')}
+                        className="p-1 hover:bg-gray-200 rounded-full transition-colors"
+                      >
+                        <X className="h-5 w-5 text-gray-600" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="md:col-span-2">
                 <label className="form-label">TAN Number *</label>
                 <input
-                  {...register('tan', { 
+                  {...register('tan', {
                     required: 'TAN is required',
                     maxLength: { value: 10, message: 'TAN must be 10 characters' }
                   })}
@@ -538,9 +621,48 @@ const CreateFPCRequest: React.FC = () => {
               </div>
 
               <div className="md:col-span-2">
+                <label className="form-label">Upload TAN Document</label>
+                <div className="space-y-2">
+                  {!tanFile ? (
+                    <label htmlFor="tan-upload" className="flex items-center justify-center w-full px-4 py-8 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors">
+                      <div className="flex flex-col items-center space-y-2">
+                        <Upload className="h-8 w-8 text-gray-400" />
+                        <span className="text-sm text-gray-600">Click to upload TAN document</span>
+                        <span className="text-xs text-gray-500">Supports: JPG, PNG, GIF, PDF (Max 5MB)</span>
+                      </div>
+                      <input
+                        id="tan-upload"
+                        type="file"
+                        className="hidden"
+                        accept="image/jpeg,image/jpg,image/png,image/gif,application/pdf"
+                        onChange={(e) => handleFileChange(e, setTanFile)}
+                      />
+                    </label>
+                  ) : (
+                    <div className="flex items-center justify-between p-4 bg-gray-50 border border-gray-300 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        {getFileIcon(tanFile)}
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">{tanFile.name}</p>
+                          <p className="text-xs text-gray-500">{(tanFile.size / 1024).toFixed(2)} KB</p>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removeFile(setTanFile, 'tan-upload')}
+                        className="p-1 hover:bg-gray-200 rounded-full transition-colors"
+                      >
+                        <X className="h-5 w-5 text-gray-600" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="md:col-span-2">
                 <label className="form-label">GST Number *</label>
                 <input
-                  {...register('gst_number', { 
+                  {...register('gst_number', {
                     required: 'GST number is required',
                     // pattern: { value: /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/, message: 'Invalid GST format' }
                   })}
@@ -550,6 +672,45 @@ const CreateFPCRequest: React.FC = () => {
                 />
                 {errors.gst_number && <p className="text-red-500 text-sm mt-1">{errors.gst_number.message}</p>}
               </div>
+
+              <div className="md:col-span-2">
+                <label className="form-label">Upload GST Document</label>
+                <div className="space-y-2">
+                  {!gstFile ? (
+                    <label htmlFor="gst-upload" className="flex items-center justify-center w-full px-4 py-8 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors">
+                      <div className="flex flex-col items-center space-y-2">
+                        <Upload className="h-8 w-8 text-gray-400" />
+                        <span className="text-sm text-gray-600">Click to upload GST document</span>
+                        <span className="text-xs text-gray-500">Supports: JPG, PNG, GIF, PDF (Max 5MB)</span>
+                      </div>
+                      <input
+                        id="gst-upload"
+                        type="file"
+                        className="hidden"
+                        accept="image/jpeg,image/jpg,image/png,image/gif,application/pdf"
+                        onChange={(e) => handleFileChange(e, setGstFile)}
+                      />
+                    </label>
+                  ) : (
+                    <div className="flex items-center justify-between p-4 bg-gray-50 border border-gray-300 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        {getFileIcon(gstFile)}
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">{gstFile.name}</p>
+                          <p className="text-xs text-gray-500">{(gstFile.size / 1024).toFixed(2)} KB</p>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removeFile(setGstFile, 'gst-upload')}
+                        className="p-1 hover:bg-gray-200 rounded-full transition-colors"
+                      >
+                        <X className="h-5 w-5 text-gray-600" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
 
@@ -557,7 +718,18 @@ const CreateFPCRequest: React.FC = () => {
             <button
               type="button"
               className="btn-secondary"
-              onClick={() => reset()}
+              onClick={() => {
+                reset();
+                setPanFile(null);
+                setTanFile(null);
+                setGstFile(null);
+                const panInput = document.getElementById('pan-upload') as HTMLInputElement;
+                const tanInput = document.getElementById('tan-upload') as HTMLInputElement;
+                const gstInput = document.getElementById('gst-upload') as HTMLInputElement;
+                if (panInput) panInput.value = '';
+                if (tanInput) tanInput.value = '';
+                if (gstInput) gstInput.value = '';
+              }}
             >
               Reset Form
             </button>
