@@ -189,22 +189,24 @@ const CreateFPCRequest: React.FC = () => {
 
       const formData = new FormData();
 
-      formData.append('name', data.name);
-      if (data.state_code) formData.append('state_code', data.state_code.toString());
-      if (data.district_code) formData.append('district_code', data.district_code.toString());
-      formData.append('fpc_registration_number', data.fpc_registration_number);
-      formData.append('pan', data.pan);
-      formData.append('tan', data.tan);
-      formData.append('gst_number', data.gst_number);
-      formData.append('registration_date', data.registration_date);
-      formData.append('registered_company_address', data.registered_company_address);
-      formData.append('office_address', data.office_address);
-      formData.append('office_block', data.office_block);
-      formData.append('office_contact_name', data.office_contact_name);
-      formData.append('office_contact_number', data.office_contact_number);
-      formData.append('office_contact_email', data.office_contact_email);
-      formData.append('responsible_wotr_staff_phone', data.responsible_wotr_staff_phone);
-      formData.append('project_manager_phone', data.project_manager_phone);
+      const fpo_details = {
+        name: data.name,
+        state_code: data.state_code,
+        district_code: data.district_code,
+        fpc_registration_number: data.fpc_registration_number,
+        pan: data.pan,
+        tan: data.tan,
+        gst_number: data.gst_number,
+        registration_date: data.registration_date,
+        registered_company_address: data.registered_company_address,
+        office_address: data.office_address,
+        office_block: data.office_block,
+        office_contact_name: data.office_contact_name,
+        office_contact_number: data.office_contact_number,
+        office_contact_email: data.office_contact_email,
+        responsible_wotr_staff_phone: data.responsible_wotr_staff_phone,
+        project_manager_phone: data.project_manager_phone
+      };
 
       const bod_details = {
         mobile_number: data.bod_phone_number,
@@ -214,6 +216,8 @@ const CreateFPCRequest: React.FC = () => {
         din: data.bod_din,
         address: data.address
       };
+
+      formData.append('fpo_details', JSON.stringify(fpo_details));
       formData.append('bod_details', JSON.stringify(bod_details));
 
       if (panFile) {
