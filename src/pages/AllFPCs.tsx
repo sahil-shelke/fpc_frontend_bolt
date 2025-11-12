@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import { Building2, MapPin, Calendar, Users, Phone, Mail, Eye, FileEdit as Edit, Trash2, Plus, Save } from 'lucide-react';
+import { Building2, MapPin, Calendar, Users, Phone, Mail, Eye, FileEdit as Edit, Trash2, Plus, Save, Upload, X, FileText, Image } from 'lucide-react';
 import EditModal from '../components/EditModal';
 
 interface CreateFPCRequestData {
@@ -103,6 +103,10 @@ const AllFPCs: React.FC = () => {
   const [districts, setDistricts] = useState<District[]>([]);
   const [selectedState, setSelectedState] = useState('');
   const [selectedStateCode, setSelectedStateCode] = useState<number | null>(null);
+  const [panFile, setPanFile] = useState<File | null>(null);
+  const [tanFile, setTanFile] = useState<File | null>(null);
+  const [gstFile, setGstFile] = useState<File | null>(null);
+  const [previewFile, setPreviewFile] = useState<{ file: File; url: string; type: string } | null>(null);
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<CreateFPCRequestData>();
 
@@ -205,35 +209,107 @@ const fetchFPOs = async () => {
     }
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, setFile: React.Dispatch<React.SetStateAction<File | null>>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'application/pdf'];
+      if (!validTypes.includes(file.type)) {
+        toast.error('Invalid file type. Please upload JPG, PNG, GIF, or PDF files only.');
+        return;
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        toast.error('File size must be less than 10MB');
+        return;
+      }
+      setFile(file);
+    }
+  };
+
+  const removeFile = (setFile: React.Dispatch<React.SetStateAction<File | null>>, inputId: string) => {
+    setFile(null);
+    const input = document.getElementById(inputId) as HTMLInputElement;
+    if (input) input.value = '';
+  };
+
+  const getFileIcon = (file: File) => {
+    if (file.type === 'application/pdf') {
+      return <FileText className="h-5 w-5 text-red-600" />;
+    }
+    return <Image className="h-5 w-5 text-blue-600" />;
+  };
+
+  const openPreview = (file: File) => {
+    const url = URL.createObjectURL(file);
+    const type = file.type;
+    setPreviewFile({ file, url, type });
+  };
+
+  const closePreview = () => {
+    if (previewFile) {
+      URL.revokeObjectURL(previewFile.url);
+    }
+    setPreviewFile(null);
+  };
+
   const onSubmit = async (data: CreateFPCRequestData) => {
     setCreateLoading(true);
     try {
       const token = localStorage.getItem('token');
-      
-      // Prepare the payload according to the API schema
-      const payload = {
-        ...data,
-        is_approved: true,
-        donors: [],
-        bod_details: {
-          mobile_number: data.bod_phone_number,
-          fpo_id: 0,
-          name: data.bod_name,
-          gender: data.bod_gender,
-          education_qualification: data.bod_qualification || "",
-          din: data.bod_din,
-          address: data.address || "",
-          date_of_joining: data.bod_date_of_joining || null
-        }
+
+      const formData = new FormData();
+
+      const fpo_details = {
+        name: data.name,
+        state_code: data.state_code,
+        district_code: data.district_code,
+        fpc_registration_number: data.fpc_registration_number,
+        pan: data.pan,
+        tan: data.tan,
+        gst_number: data.gst_number,
+        registration_date: data.registration_date,
+        registered_company_address: data.registered_company_address,
+        office_address: data.office_address,
+        office_block: data.office_block,
+        office_contact_name: data.office_contact_name,
+        office_contact_number: data.office_contact_number,
+        office_contact_email: data.office_contact_email,
+        responsible_wotr_staff_phone: data.responsible_wotr_staff_phone,
+        project_manager_phone: data.project_manager_phone,
+        is_approved: true
       };
+
+      const bod_details = {
+        mobile_number: data.bod_phone_number,
+        fpo_id: 0,
+        name: data.bod_name,
+        gender: data.bod_gender,
+        education_qualification: data.bod_qualification || "",
+        din: data.bod_din,
+        address: data.address || "",
+        date_of_joining: data.bod_date_of_joining || null
+      };
+
+      formData.append('fpo_details', JSON.stringify(fpo_details));
+      formData.append('bod_details', JSON.stringify(bod_details));
+
+      if (panFile) {
+        formData.append('pan_document', panFile);
+      }
+      if (tanFile) {
+        formData.append('tan_document', tanFile);
+      }
+      if (gstFile) {
+        formData.append('gst_document', gstFile);
+      }
+
+      console.log('Sending form data with files');
 
       const response = await fetch('/api/fpo/', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+          'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(payload)
+        body: formData
       });
 
       if (!response.ok) {
@@ -242,12 +318,15 @@ const fetchFPOs = async () => {
       }
 
       const result = await response.json();
-      
+
       toast.success('FPC created successfully! Additional details can be added later through the dedicated forms.');
       reset();
+      setPanFile(null);
+      setTanFile(null);
+      setGstFile(null);
       setShowCreateForm(false);
-      fetchFPOs(); // Refresh the list
-      
+      fetchFPOs();
+
     } catch (error: any) {
       console.error('Error creating FPC:', error);
       toast.error(error.message || 'Failed to create FPC');
@@ -724,7 +803,7 @@ const uniqueStates = [...new Set(fpos.map(fpo => fpo.state_name))].filter(Boolea
               {/* Registration Documents */}
               <div className="space-y-4">
                 <h3 className="section-title">Registration Documents</h3>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="form-label">FPC Registration Number *</label>
@@ -749,7 +828,7 @@ const uniqueStates = [...new Set(fpos.map(fpo => fpo.state_name))].filter(Boolea
                   <div>
                     <label className="form-label">PAN Number *</label>
                     <input
-                      {...register('pan', { 
+                      {...register('pan', {
                         required: 'PAN is required',
                         // pattern: { value: /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, message: 'Invalid PAN format' }
                       })}
@@ -761,9 +840,56 @@ const uniqueStates = [...new Set(fpos.map(fpo => fpo.state_name))].filter(Boolea
                   </div>
 
                   <div>
+                    <label className="form-label">PAN Document Upload</label>
+                    <div>
+                      {!panFile ? (
+                        <label className="flex items-center justify-center h-[42px] px-4 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-primary-500 transition-colors">
+                          <Upload className="h-5 w-5 text-gray-400 mr-2" />
+                          <span className="text-sm text-gray-600">Upload PAN Document</span>
+                          <input
+                            id="pan-upload-allfpc"
+                            type="file"
+                            className="hidden"
+                            accept="image/jpeg,image/jpg,image/png,image/gif,application/pdf"
+                            onChange={(e) => handleFileChange(e, setPanFile)}
+                          />
+                        </label>
+                      ) : (
+                        <div className="flex items-center justify-between h-[42px] px-3 bg-green-50 border border-green-300 rounded-lg">
+                          <div className="flex items-center space-x-2">
+                            {getFileIcon(panFile)}
+                            <div className="flex items-center space-x-2">
+                              <p className="text-sm font-medium text-gray-900 truncate max-w-[150px]">{panFile.name}</p>
+                              <span className="text-xs text-gray-500">({(panFile.size / 1024).toFixed(2)} KB)</span>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-1">
+                            <button
+                              type="button"
+                              onClick={() => openPreview(panFile)}
+                              className="p-1 hover:bg-green-100 rounded-full transition-colors"
+                              title="Preview document"
+                            >
+                              <Eye className="h-4 w-4 text-blue-600" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => removeFile(setPanFile, 'pan-upload-allfpc')}
+                              className="p-1 hover:bg-green-100 rounded-full transition-colors"
+                              title="Remove document"
+                            >
+                              <X className="h-4 w-4 text-gray-600" />
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div>
                     <label className="form-label">TAN Number *</label>
                     <input
-                      {...register('tan', { 
+                      {...register('tan', {
                         required: 'TAN is required',
                         maxLength: { value: 10, message: 'TAN must be 10 characters' }
                       })}
@@ -774,10 +900,57 @@ const uniqueStates = [...new Set(fpos.map(fpo => fpo.state_name))].filter(Boolea
                     {errors.tan && <p className="text-red-500 text-sm mt-1">{errors.tan.message}</p>}
                   </div>
 
-                  <div className="md:col-span-2">
+                  <div>
+                    <label className="form-label">TAN Document Upload</label>
+                    <div>
+                      {!tanFile ? (
+                        <label className="flex items-center justify-center h-[42px] px-4 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-primary-500 transition-colors">
+                          <Upload className="h-5 w-5 text-gray-400 mr-2" />
+                          <span className="text-sm text-gray-600">Upload TAN Document</span>
+                          <input
+                            id="tan-upload-allfpc"
+                            type="file"
+                            className="hidden"
+                            accept="image/jpeg,image/jpg,image/png,image/gif,application/pdf"
+                            onChange={(e) => handleFileChange(e, setTanFile)}
+                          />
+                        </label>
+                      ) : (
+                        <div className="flex items-center justify-between h-[42px] px-3 bg-green-50 border border-green-300 rounded-lg">
+                          <div className="flex items-center space-x-2">
+                            {getFileIcon(tanFile)}
+                            <div className="flex items-center space-x-2">
+                              <p className="text-sm font-medium text-gray-900 truncate max-w-[150px]">{tanFile.name}</p>
+                              <span className="text-xs text-gray-500">({(tanFile.size / 1024).toFixed(2)} KB)</span>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-1">
+                            <button
+                              type="button"
+                              onClick={() => openPreview(tanFile)}
+                              className="p-1 hover:bg-green-100 rounded-full transition-colors"
+                              title="Preview document"
+                            >
+                              <Eye className="h-4 w-4 text-blue-600" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => removeFile(setTanFile, 'tan-upload-allfpc')}
+                              className="p-1 hover:bg-green-100 rounded-full transition-colors"
+                              title="Remove document"
+                            >
+                              <X className="h-4 w-4 text-gray-600" />
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div>
                     <label className="form-label">GST Number *</label>
                     <input
-                      {...register('gst_number', { 
+                      {...register('gst_number', {
                         required: 'GST number is required',
                         // pattern: { value: /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/, message: 'Invalid GST format' }
                       })}
@@ -786,6 +959,53 @@ const uniqueStates = [...new Set(fpos.map(fpo => fpo.state_name))].filter(Boolea
                       maxLength={15}
                     />
                     {errors.gst_number && <p className="text-red-500 text-sm mt-1">{errors.gst_number.message}</p>}
+                  </div>
+
+                  <div>
+                    <label className="form-label">GST Document Upload</label>
+                    <div>
+                      {!gstFile ? (
+                        <label className="flex items-center justify-center h-[42px] px-4 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-primary-500 transition-colors">
+                          <Upload className="h-5 w-5 text-gray-400 mr-2" />
+                          <span className="text-sm text-gray-600">Upload GST Document</span>
+                          <input
+                            id="gst-upload-allfpc"
+                            type="file"
+                            className="hidden"
+                            accept="image/jpeg,image/jpg,image/png,image/gif,application/pdf"
+                            onChange={(e) => handleFileChange(e, setGstFile)}
+                          />
+                        </label>
+                      ) : (
+                        <div className="flex items-center justify-between h-[42px] px-3 bg-green-50 border border-green-300 rounded-lg">
+                          <div className="flex items-center space-x-2">
+                            {getFileIcon(gstFile)}
+                            <div className="flex items-center space-x-2">
+                              <p className="text-sm font-medium text-gray-900 truncate max-w-[150px]">{gstFile.name}</p>
+                              <span className="text-xs text-gray-500">({(gstFile.size / 1024).toFixed(2)} KB)</span>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-1">
+                            <button
+                              type="button"
+                              onClick={() => openPreview(gstFile)}
+                              className="p-1 hover:bg-green-100 rounded-full transition-colors"
+                              title="Preview document"
+                            >
+                              <Eye className="h-4 w-4 text-blue-600" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => removeFile(setGstFile, 'gst-upload-allfpc')}
+                              className="p-1 hover:bg-green-100 rounded-full transition-colors"
+                              title="Remove document"
+                            >
+                              <X className="h-4 w-4 text-gray-600" />
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -960,6 +1180,48 @@ const uniqueStates = [...new Set(fpos.map(fpo => fpo.state_name))].filter(Boolea
           fpoId={selectedFPO.fpo_id}
           fpoName={selectedFPO.fpo_name}
         />
+      )}
+
+      {/* Preview Modal */}
+      {previewFile && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75" onClick={closePreview}>
+          <div className="relative max-w-5xl max-h-[90vh] w-full mx-4" onClick={(e) => e.stopPropagation()}>
+            <div className="bg-white rounded-lg shadow-xl overflow-hidden">
+              <div className="flex items-center justify-between p-4 border-b bg-gray-50">
+                <div className="flex items-center space-x-3">
+                  {getFileIcon(previewFile.file)}
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">Document Preview</h3>
+                    <p className="text-sm text-gray-600">{previewFile.file.name}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={closePreview}
+                  className="p-2 hover:bg-gray-200 rounded-full transition-colors"
+                  title="Close preview"
+                >
+                  <X className="h-6 w-6 text-gray-600" />
+                </button>
+              </div>
+
+              <div className="overflow-auto max-h-[calc(90vh-80px)] bg-gray-100 flex items-center justify-center p-4">
+                {previewFile.type === 'application/pdf' ? (
+                  <iframe
+                    src={previewFile.url}
+                    className="w-full h-[calc(90vh-120px)] bg-white rounded"
+                    title="PDF Preview"
+                  />
+                ) : (
+                  <img
+                    src={previewFile.url}
+                    alt="Document preview"
+                    className="max-w-full max-h-full object-contain rounded"
+                  />
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
