@@ -1073,13 +1073,13 @@ const uniqueStates = [...new Set(fpos.map(fpo => fpo.state_name))].filter(Boolea
 
       {/* Detail Modal */}
       {showModal && selectedFPO && (
-        <div className="modal-overlay">
-          <div className="modal-container">
-            <div className="modal-header">
-              <h2 className="text-xl font-bold text-gray-900">FPO Details</h2>
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-6xl max-h-[95vh] overflow-hidden flex flex-col">
+            <div className="flex items-center justify-between p-6 border-b bg-gray-50 flex-shrink-0">
+              <h2 className="text-2xl font-bold text-gray-900">FPO Details</h2>
               <button
                 onClick={() => setShowModal(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-gray-400 hover:text-gray-600 transition-colors"
               >
                 <span className="sr-only">Close</span>
                 <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1088,7 +1088,7 @@ const uniqueStates = [...new Set(fpos.map(fpo => fpo.state_name))].filter(Boolea
               </button>
             </div>
 
-            <div className="p-6 space-y-6">
+            <div className="flex-1 overflow-y-auto p-6 space-y-6">
               {/* Basic Information */}
               <div>
                 <h3 className="text-lg font-medium text-gray-900 mb-3">Basic Information</h3>
@@ -1195,7 +1195,7 @@ const uniqueStates = [...new Set(fpos.map(fpo => fpo.state_name))].filter(Boolea
               )}
             </div>
 
-            <div className="modal-footer">
+            <div className="flex justify-end space-x-4 p-6 border-t bg-gray-50 flex-shrink-0">
               <button
                 onClick={() => setShowModal(false)}
                 className="btn-secondary"
