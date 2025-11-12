@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import { Save, FileText, Plus } from 'lucide-react';
+import { Save, FileText, Plus, Upload, X, Eye } from 'lucide-react';
 
 interface LicenseFormData {
   fpo_id: number;
@@ -21,6 +21,7 @@ const LicenseForm: React.FC = () => {
   const [fpos, setFpos] = useState<any[]>([]);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [licenseFile, setLicenseFile] = useState<File | null>(null);
 
   const { register, handleSubmit, reset, watch, formState: { errors } } = useForm<LicenseFormData>();
   const selectedCategory = watch('category');
@@ -68,21 +69,36 @@ const LicenseForm: React.FC = () => {
         other_category_name: data.category === 'other' ? data.other_category_name : null
       };
       console.log('Updated License ID:', editingId);
-      
+
       if (editingId) {
-        await axios.put(`/api/licenses/${editingId}`, processedData);
+        const formData = new FormData();
+        formData.append('license_details', JSON.stringify(processedData));
+        if (licenseFile) {
+          formData.append('license_document', licenseFile);
+        }
+        await axios.put(`/api/licenses/${editingId}`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
         toast.success('License updated successfully!');
         setEditingId(null);
       } else {
+        const formData = new FormData();
         const payload = {
-          ...data, 
+          ...processedData,
           fpo_id
+        };
+        formData.append('license_details', JSON.stringify(payload));
+        if (licenseFile) {
+          formData.append('license_document', licenseFile);
         }
-        await axios.post('/api/licenses/', payload);
+        await axios.post('/api/licenses/', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
         toast.success('License created successfully!');
       }
       reset();
-      setIsModalOpen(false); // close modal
+      setLicenseFile(null);
+      setIsModalOpen(false);
       fetchLicenses();
     } catch (error: any) {
       toast.error(error.response?.data?.detail || 'Operation failed');
@@ -254,8 +270,76 @@ const LicenseForm: React.FC = () => {
                 </div>
               </div>
 
+              <div>
+                <label className="form-label">License Document (Image/PDF)</label>
+                <div className="mt-1">
+                  <input
+                    id="license-upload"
+                    type="file"
+                    accept="image/*,.pdf"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        if (file.size > 5 * 1024 * 1024) {
+                          toast.error('File size must be less than 5MB');
+                          e.target.value = '';
+                          return;
+                        }
+                        setLicenseFile(file);
+                      }
+                    }}
+                    className="hidden"
+                  />
+                  <label
+                    htmlFor="license-upload"
+                    className="flex items-center justify-center w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-primary-500 hover:bg-gray-50 transition-colors"
+                  >
+                    <Upload className="h-5 w-5 text-gray-400 mr-2" />
+                    <span className="text-sm text-gray-600">
+                      {licenseFile ? 'Change Document' : 'Upload License Document'}
+                    </span>
+                  </label>
+                  {licenseFile && (
+                    <div className="mt-2 p-3 bg-gray-50 rounded-lg flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <FileText className="h-5 w-5 text-primary-600" />
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">{licenseFile.name}</p>
+                          <span className="text-xs text-gray-500">({(licenseFile.size / 1024).toFixed(2)} KB)</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const url = URL.createObjectURL(licenseFile);
+                            window.open(url, '_blank');
+                          }}
+                          className="p-1 hover:bg-gray-200 rounded-full transition-colors"
+                          title="Preview document"
+                        >
+                          <Eye className="h-4 w-4 text-blue-600" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setLicenseFile(null);
+                            const input = document.getElementById('license-upload') as HTMLInputElement;
+                            if (input) input.value = '';
+                          }}
+                          className="p-1 hover:bg-gray-200 rounded-full transition-colors"
+                          title="Remove document"
+                        >
+                          <X className="h-4 w-4 text-gray-600" />
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
               <div className="flex justify-end space-x-4">
-                <button type="button" onClick={() => { reset(); setIsModalOpen(false); setEditingId(null); }} className="btn-secondary">Cancel</button>
+                <button type="button" onClick={() => { reset(); setIsModalOpen(false); setEditingId(null); setLicenseFile(null); }} className="btn-secondary">Cancel</button>
                 <button type="submit" disabled={loading} className="btn-primary flex items-center space-x-2">
                   <Save className="h-4 w-4" />
                   <span>{loading ? 'Saving...' : editingId ? 'Update License' : 'Create License'}</span>
