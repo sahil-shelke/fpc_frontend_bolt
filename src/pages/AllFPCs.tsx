@@ -366,16 +366,18 @@ const uniqueStates = [...new Set(fpos.map(fpo => fpo.state_name))].filter(Boolea
           <h1 className="text-3xl font-bold text-[#111827] mb-2">All FPCs</h1>
           <p className="text-[#6B7280]">Manage all Farmer Producer Companies across regions</p>
         </div>
-        <div className="px-4 py-2 bg-[#EFF6FF] rounded-lg">
-          <p className="text-sm font-semibold text-[#3B82F6]">{fpos.length} Total FPCs</p>
+        <div className="flex items-center space-x-4">
+          <div className="px-4 py-2 bg-[#EFF6FF] rounded-lg">
+            <p className="text-sm font-semibold text-[#3B82F6]">{fpos.length} Total FPCs</p>
+          </div>
+          <button
+            onClick={() => setShowCreateForm(true)}
+            className="btn-primary flex items-center space-x-2"
+          >
+            <Plus className="h-4 w-4" />
+            <span>Create New FPC</span>
+          </button>
         </div>
-        <button
-          onClick={() => setShowCreateForm(true)}
-          className="btn-primary flex items-center space-x-2"
-        >
-          <Plus className="h-4 w-4" />
-          <span>Create New FPC</span>
-        </button>
       </div>
 
       {/* Search and Filter */}
