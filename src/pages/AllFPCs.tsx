@@ -371,10 +371,7 @@ const uniqueStates = [...new Set(fpos.map(fpo => fpo.state_name))].filter(Boolea
             <p className="text-sm font-semibold text-[#3B82F6]">{fpos.length} Total FPCs</p>
           </div>
           <button
-            onClick={() => {
-              console.log('Create FPC button clicked');
-              setShowCreateForm(true);
-            }}
+            onClick={() => setShowCreateForm(true)}
             className="btn-primary flex items-center space-x-2"
           >
             <Plus className="h-4 w-4" />
@@ -524,14 +521,8 @@ const uniqueStates = [...new Set(fpos.map(fpo => fpo.state_name))].filter(Boolea
       </div>
 
       {/* Create FPC Form Modal */}
-      {console.log('showCreateForm state:', showCreateForm)}
       {showCreateForm && (
-        <div className="modal-overlay" onClick={(e) => {
-          if (e.target === e.currentTarget) {
-            setShowCreateForm(false);
-            reset();
-          }
-        }}>
+        <div className="modal-overlay">
           <div className="modal-container">
             <div className="modal-header">
               <h2 className="text-xl font-bold text-gray-900">Create New FPC</h2>
