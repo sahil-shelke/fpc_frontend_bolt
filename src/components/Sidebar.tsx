@@ -19,11 +19,12 @@ import {
   Warehouse,
   Menu,
   X,
-  User
+  User,
+  LogOut
 } from 'lucide-react';
 
 const Sidebar: React.FC = () => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
 
@@ -130,14 +131,6 @@ const Sidebar: React.FC = () => {
           <h1 className="text-xl font-bold text-gray-800">FPC Management</h1>
         </div>
 
-        {user && (
-          <div className="px-4 py-3 border-b border-gray-200 bg-gray-50">
-            <p className="text-sm font-medium text-gray-900">{user.firstName} {user.lastName}</p>
-            <p className="text-xs text-gray-500 capitalize">{user.role.replace('_', ' ')}</p>
-         
-          </div>
-        )}
-
         <nav className="mt-8 flex-1 overflow-y-auto">
           <div className="px-4 space-y-2">
             {navigation.map((item) => (
@@ -160,38 +153,57 @@ const Sidebar: React.FC = () => {
           </div>
         </nav>
 
-        <div className="border-t border-gray-200 p-4">
-          <div className="relative">
-            <button
-              onClick={() => setShowProfileMenu(!showProfileMenu)}
-              className="flex items-center justify-center w-full px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-lg transition-colors"
-            >
-              <Settings className="h-5 w-5" />
-            </button>
-
-            {showProfileMenu && (
-              <div className="absolute bottom-full left-0 right-0 mb-2 bg-white border border-gray-200 rounded-lg shadow-lg">
-                <NavLink
-                  to="/profile"
-                  onClick={() => {
-                    setShowProfileMenu(false);
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className={({ isActive }) =>
-                    `flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
-                      isActive
-                        ? 'bg-primary-100 text-primary-700'
-                        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-                    }`
-                  }
+        {user && (
+          <div className="border-t border-gray-200 p-4">
+            <div className="relative">
+              <div className="flex items-center justify-between">
+                <div className="flex-1 min-w-0 mr-2">
+                  <p className="text-sm font-medium text-gray-900 truncate">{user.firstName} {user.lastName}</p>
+                  <p className="text-xs text-gray-500 capitalize truncate">{user.role.replace('_', ' ')}</p>
+                </div>
+                <button
+                  onClick={() => setShowProfileMenu(!showProfileMenu)}
+                  className="flex-shrink-0 p-2 text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-lg transition-colors"
                 >
-                  <User className="mr-3 h-5 w-5" />
-                  Profile
-                </NavLink>
+                  <Settings className="h-5 w-5" />
+                </button>
               </div>
-            )}
+
+              {showProfileMenu && (
+                <div className="absolute bottom-full left-0 right-0 mb-2 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
+                  <NavLink
+                    to="/profile"
+                    onClick={() => {
+                      setShowProfileMenu(false);
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className={({ isActive }) =>
+                      `flex items-center px-4 py-3 text-sm font-medium transition-colors ${
+                        isActive
+                          ? 'bg-primary-100 text-primary-700'
+                          : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                      }`
+                    }
+                  >
+                    <User className="mr-3 h-5 w-5" />
+                    Profile
+                  </NavLink>
+                  <button
+                    onClick={() => {
+                      logout();
+                      setShowProfileMenu(false);
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="flex items-center w-full px-4 py-3 text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+                  >
+                    <LogOut className="mr-3 h-5 w-5" />
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </>
   );
