@@ -127,12 +127,10 @@ const fetchFPOs = async () => {
         'Authorization': `Bearer ${token}`
       }
     });
-
     if (Array.isArray(response.data) && response.data.length === 0) {
       setFpos([]); // still set it to empty array
       return; // don't show any toast
     }
-
     setFpos(response.data);
   } catch (error: any) {
     console.error('Error fetching FPOs:', error);
@@ -287,7 +285,8 @@ const fetchFPOs = async () => {
         office_contact_number: data.office_contact_number,
         office_contact_email: data.office_contact_email,
         responsible_wotr_staff_phone: data.responsible_wotr_staff_phone,
-        project_manager_phone: data.project_manager_phone
+        project_manager_phone: data.project_manager_phone,
+        is_approved: true
       };
 
       const bod_details = {

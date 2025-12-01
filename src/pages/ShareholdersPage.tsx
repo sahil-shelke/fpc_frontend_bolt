@@ -250,31 +250,33 @@ const ShareholdersPage: React.FC = () => {
 
       {/* Form Modal */}
       {showForm && (
-        <div className="modal-overlay">
-          <div className="modal-container">
-            <div className="modal-header">
-              <h2 className="text-xl font-bold text-gray-900">
-                {editingId ? 'Edit Shareholder' : 'Add Shareholder'}
-              </h2>
-              <button
-                onClick={() => {
-                  setShowForm(false);
-                  setEditingId(null);
-                  reset();
-                }}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                <span className="sr-only">Close</span>
-                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-bold text-gray-900">
+                  {editingId ? 'Edit Shareholder' : 'Add Shareholder'}
+                </h2>
+                <button
+                  onClick={() => {
+                    setShowForm(false);
+                    setEditingId(null);
+                    reset();
+                  }}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <span className="sr-only">Close</span>
+                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-8">
               {/* Basic Information */}
               <div className="space-y-4">
-                <h3 className="section-title">Basic Information</h3>
+                <h3 className="text-lg font-medium text-gray-900 border-b pb-2">Basic Information</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                  <div>
                   <label className="form-label">FPO Name *</label>
@@ -357,7 +359,7 @@ const ShareholdersPage: React.FC = () => {
               {/* Director-specific fields */}
               {selectedPosition === 'Director' && (
                 <div className="space-y-4">
-                  <h3 className="section-title">Director Information</h3>
+                  <h3 className="text-lg font-medium text-gray-900 border-b pb-2">Director Information</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
                       <label className="form-label">Date of Joining *</label>
@@ -407,7 +409,7 @@ const ShareholdersPage: React.FC = () => {
 
               {/* Financial Information */}
               <div className="space-y-4">
-                <h3 className="section-title">Financial Information</h3>
+                <h3 className="text-lg font-medium text-gray-900 border-b pb-2">Financial Information</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="form-label">Share Money Deposited</label>
@@ -455,7 +457,7 @@ const ShareholdersPage: React.FC = () => {
 
               {/* Additional Information */}
               <div className="space-y-4">
-                <h3 className="section-title">Additional Information</h3>
+                <h3 className="text-lg font-medium text-gray-900 border-b pb-2">Additional Information</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="form-label">Status of Member</label>
@@ -517,44 +519,42 @@ const ShareholdersPage: React.FC = () => {
       {/* Shareholders List */}
       <div className="card p-6">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-[#E5E7EB]">
-            <thead>
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
               <tr>
-                <th className="table-header">Name</th>
-                <th className="table-header">Gender</th>
-                <th className="table-header">Position</th>
-                <th className="table-header">Share Money</th>
-                <th className="table-header">SC/ST</th>
-                <th className="table-header">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Gender</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Position</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Share Money</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SC/ST</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-[#E5E7EB]">
+            <tbody className="bg-white divide-y divide-gray-200">
               {filteredShareholders.map((shareholder) => (
-                <tr key={shareholder.id} className="hover:bg-[#F9FAFB] transition-colors">
-                  <td className="table-cell font-medium text-[#111827]">{shareholder.member_name}</td>
-                  <td className="table-cell">{shareholder.gender === 'm' ? 'Male' : 'Female'}</td>
-                  <td className="table-cell">{shareholder.position_of_member}</td>
-                  <td className="table-cell">
+                <tr key={shareholder.id}>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{shareholder.member_name}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{shareholder.gender === 'm' ? 'Male' : 'Female'}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{shareholder.position_of_member}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {shareholder.sharemoney_deposited_by_member ? `₹${(shareholder.sharemoney_deposited_by_member).toLocaleString()}` : 'N/A'}
                   </td>
-                  <td className="table-cell">{shareholder.is_scst ? 'Yes' : 'No'}</td>
-                  <td className="table-cell">
-                    <div className="flex items-center space-x-2">
-                      <button
-                        onClick={() => handleEdit(shareholder)}
-                        className="btn-edit"
-                      >
-                        <Edit className="h-4 w-4" strokeWidth={2} />
-                        <span>Edit</span>
-                      </button>
-                      <button
-                        onClick={() => handleDelete(shareholder.id)}
-                        className="btn-delete"
-                      >
-                        <Trash2 className="h-4 w-4" strokeWidth={2} />
-                        <span>Delete</span>
-                      </button>
-                    </div>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{shareholder.is_scst ? 'Yes' : 'No'}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                    <button
+                      onClick={() => handleEdit(shareholder)}
+                      className="text-primary-600 hover:text-primary-900 flex items-center space-x-1"
+                    >
+                      <Edit className="h-4 w-4" />
+                      <span>Edit</span>
+                    </button>
+                    <button
+                      onClick={() => handleDelete(shareholder.id)}
+                      className="text-red-600 hover:text-red-900 flex items-center space-x-1"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      <span>Delete</span>
+                    </button>
                   </td>
                 </tr>
               ))}

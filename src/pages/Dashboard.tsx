@@ -203,15 +203,15 @@ const fetchAnnualAgriStats = async (year: string) => {
           title: 'Active Licenses',
           value: stats.totalLicenses || 0,
           icon: FileText,
-          color: 'text-blue-600',
-          bgColor: 'bg-blue-100'
+          color: 'text-purple-600',
+          bgColor: 'bg-purple-100'
         },
         {
           title: 'Financial Records',
           value: stats.totalFinancialRecords || 0,
           icon: TrendingUp,
-          color: 'text-green-600',
-          bgColor: 'bg-green-100'
+          color: 'text-orange-600',
+          bgColor: 'bg-orange-100'
         }
       );
     }
@@ -239,8 +239,8 @@ const fetchAnnualAgriStats = async (year: string) => {
       title: 'Active Projects',
       value: stats.activeProjects,
       icon: TrendingUp,
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-100'
+      color: 'text-purple-600',
+      bgColor: 'bg-purple-100'
     });
 
     return baseCards;
@@ -265,27 +265,29 @@ const fetchAnnualAgriStats = async (year: string) => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-[#111827] mb-2">Dashboard</h1>
-          <p className="text-[#6B7280] capitalize">Welcome back, {user?.firstName}</p>
+          <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
+          <p className="text-gray-600 capitalize">Welcome, {user?.firstName} ({user?.role.replace('_', ' ')})</p>
         </div>
-        <div className="text-sm text-[#9CA3AF]">
-          {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+        <div className="text-sm text-gray-500">
+          Last updated: {new Date().toLocaleString()}
         </div>
       </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {getStatCards().map((stat, index) => (
-          <div key={index} className="stat-card">
-            <div className="flex items-center justify-between mb-4">
-              <div className={`p-3 rounded-xl ${stat.bgColor}`}>
-                <stat.icon className={`h-6 w-6 ${stat.color}`} strokeWidth={2} />
+          <div key={index} className="card p-6">
+            <div className="flex items-center">
+              <div className={`p-3 rounded-lg ${stat.bgColor}`}>
+                <stat.icon className={`h-6 w-6 ${stat.color}`} />
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">{stat.title}</p>
+                <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
               </div>
             </div>
-            <p className="text-sm font-medium text-[#6B7280] mb-1">{stat.title}</p>
-            <p className="text-3xl font-bold text-[#111827]">{stat.value}</p>
           </div>
         ))}
       </div>
@@ -311,7 +313,7 @@ const fetchAnnualAgriStats = async (year: string) => {
                 <p className="text-sm text-gray-600">View and manage all FPCs</p>
               </button>
               <button className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left">
-                <Users className="h-8 w-8 text-blue-600 mb-2" />
+                <Users className="h-8 w-8 text-purple-600 mb-2" />
                 <h3 className="font-medium text-gray-900">User Management</h3>
                 <p className="text-sm text-gray-600">Manage regional managers and users</p>
               </button>
@@ -331,7 +333,7 @@ const fetchAnnualAgriStats = async (year: string) => {
                 <p className="text-sm text-gray-600">Monitor status of submitted requests</p>
               </button>
               <button className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left">
-                <Users className="h-8 w-8 text-blue-600 mb-2" />
+                <Users className="h-8 w-8 text-purple-600 mb-2" />
                 <h3 className="font-medium text-gray-900">Manage Team</h3>
                 <p className="text-sm text-gray-600">Oversee project managers and FPCs</p>
               </button>
@@ -351,7 +353,7 @@ const fetchAnnualAgriStats = async (year: string) => {
                 <p className="text-sm text-gray-600">Create progress and status reports</p>
               </button>
               <button className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left">
-                <TrendingUp className="h-8 w-8 text-blue-600 mb-2" />
+                <TrendingUp className="h-8 w-8 text-purple-600 mb-2" />
                 <h3 className="font-medium text-gray-900">Performance</h3>
                 <p className="text-sm text-gray-600">Track FPC performance metrics</p>
               </button>
@@ -371,7 +373,7 @@ const fetchAnnualAgriStats = async (year: string) => {
                 <p className="text-sm text-gray-600">Handle shareholder and member data</p>
               </button>
               <button className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left">
-                <FileText className="h-8 w-8 text-blue-600 mb-2" />
+                <FileText className="h-8 w-8 text-purple-600 mb-2" />
                 <h3 className="font-medium text-gray-900">Financial & Compliance</h3>
                 <p className="text-sm text-gray-600">Track financial details and compliance status</p>
               </button>
