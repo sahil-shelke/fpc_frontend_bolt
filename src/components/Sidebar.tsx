@@ -18,12 +18,14 @@ import {
   XCircle,
   Warehouse,
   Menu,
-  X
+  X,
+  User
 } from 'lucide-react';
 
 const Sidebar: React.FC = () => {
   const { user } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
 
   const getNavigationItems = () => {
     const baseItems = [
@@ -111,7 +113,7 @@ const Sidebar: React.FC = () => {
 
       {/* Sidebar */}
       <div
-        className={`bg-white w-64 shadow-lg fixed lg:static inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out ${
+        className={`bg-white w-64 shadow-lg fixed lg:static inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out flex flex-col ${
           isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}
       >
@@ -136,7 +138,7 @@ const Sidebar: React.FC = () => {
           </div>
         )}
 
-        <nav className="mt-8">
+        <nav className="mt-8 flex-1 overflow-y-auto">
           <div className="px-4 space-y-2">
             {navigation.map((item) => (
               <NavLink
@@ -157,6 +159,39 @@ const Sidebar: React.FC = () => {
             ))}
           </div>
         </nav>
+
+        <div className="border-t border-gray-200 p-4">
+          <div className="relative">
+            <button
+              onClick={() => setShowProfileMenu(!showProfileMenu)}
+              className="flex items-center justify-center w-full px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-lg transition-colors"
+            >
+              <Settings className="h-5 w-5" />
+            </button>
+
+            {showProfileMenu && (
+              <div className="absolute bottom-full left-0 right-0 mb-2 bg-white border border-gray-200 rounded-lg shadow-lg">
+                <NavLink
+                  to="/profile"
+                  onClick={() => {
+                    setShowProfileMenu(false);
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className={({ isActive }) =>
+                    `flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
+                      isActive
+                        ? 'bg-primary-100 text-primary-700'
+                        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                    }`
+                  }
+                >
+                  <User className="mr-3 h-5 w-5" />
+                  Profile
+                </NavLink>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </>
   );

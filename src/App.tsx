@@ -26,6 +26,7 @@ import DonorsPage from './pages/DonorsPage';
 import Agribusiness from './pages/Agribusiness';
 import AgribusinessOfficer from './pages/AgribusinessOfficer';
 import FacilitiesPage from './pages/FacilitiesPage';
+import Profile from './pages/Profile';
 
 
 function App() {
@@ -59,7 +60,7 @@ function App() {
               <Route path="agribusiness" element={<Agribusiness />} />
               <Route path="agribusiness-officer" element={<AgribusinessOfficer />} />
               <Route path="facilities" element={<FacilitiesPage />} />
-
+              <Route path="profile" element={<Profile />} />
             </Route>
           </Routes>
         </div>
