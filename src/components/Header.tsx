@@ -6,7 +6,7 @@ const Header: React.FC = () => {
       <div className="flex items-center justify-between px-6 py-4">
         <div>
           <h2 className="text-lg font-semibold text-gray-800">
-            WOTR - FPO Management System
+            WOTR - FPC Management
           </h2>
         </div>
       </div>
