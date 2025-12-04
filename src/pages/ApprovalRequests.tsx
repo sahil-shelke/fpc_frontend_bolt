@@ -13,6 +13,9 @@ interface PendingFPO {
   pan: string;
   tan: string;
   gst_number: string;
+  pan_doc_url?: string;
+  tan_doc_url?: string;
+  gst_number_doc_url?: string;
   registration_date: string;
   registered_company_address: string;
   office_address: string;
@@ -348,15 +351,48 @@ const ApprovalRequests: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <p className="text-sm text-gray-500">PAN</p>
-                    <p className="font-medium">{selectedRequest.pan}</p>
+                    <div className="flex items-center justify-between">
+                      <p className="font-medium">{selectedRequest.pan}</p>
+                      {selectedRequest.pan_doc_url && (
+                        <button
+                          onClick={() => window.open(selectedRequest.pan_doc_url, '_blank')}
+                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                          title="View PAN Document"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </button>
+                      )}
+                    </div>
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">TAN</p>
-                    <p className="font-medium">{selectedRequest.tan}</p>
+                    <div className="flex items-center justify-between">
+                      <p className="font-medium">{selectedRequest.tan}</p>
+                      {selectedRequest.tan_doc_url && (
+                        <button
+                          onClick={() => window.open(selectedRequest.tan_doc_url, '_blank')}
+                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                          title="View TAN Document"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </button>
+                      )}
+                    </div>
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">GST Number</p>
-                    <p className="font-medium">{selectedRequest.gst_number}</p>
+                    <div className="flex items-center justify-between">
+                      <p className="font-medium">{selectedRequest.gst_number}</p>
+                      {selectedRequest.gst_number_doc_url && (
+                        <button
+                          onClick={() => window.open(selectedRequest.gst_number_doc_url, '_blank')}
+                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                          title="View GST Document"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
