@@ -34,7 +34,17 @@ const Login: React.FC = () => {
         <div className="card p-8">
           <div className="text-center mb-8">
             <div className="flex justify-center mb-4">
-              <Building2 className="h-12 w-12 text-primary-600" />
+              <img
+                src="/logo.png"
+                alt="Logo"
+                className="h-20 w-auto object-contain"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                  const icon = e.currentTarget.nextElementSibling;
+                  if (icon) icon.classList.remove('hidden');
+                }}
+              />
+              <Building2 className="h-12 w-12 text-primary-600 hidden" />
             </div>
             <h2 className="text-3xl font-bold text-gray-900">FPC Database</h2>
             <p className="mt-2 text-gray-600">Sign in to your account</p>
