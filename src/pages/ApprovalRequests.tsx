@@ -50,6 +50,9 @@ const ApprovalRequests: React.FC = () => {
   const [comments, setComments] = useState('');
   const [filterState, setFilterState] = useState('');
   const [filterDistrict, setFilterDistrict] = useState('');
+  const [showDocModal, setShowDocModal] = useState(false);
+  const [selectedDocUrl, setSelectedDocUrl] = useState<string>('');
+  const [selectedDocType, setSelectedDocType] = useState<string>('');
 
   useEffect(() => {
     fetchPendingRequests();
@@ -77,12 +80,12 @@ const ApprovalRequests: React.FC = () => {
     try {
       const token = localStorage.getItem('token');
       const endpoint = action === 'approve' ? '/approval/approve' : '/approval/reject';
-      
-      const payload = action === 'approve' 
+
+      const payload = action === 'approve'
         ? { fpo_id: fpoId }
         : { fpo_id: fpoId, comment: comments };
-      
-      await axios.post(`/api${endpoint}`, 
+
+      await axios.post(`/api${endpoint}`,
         payload,
         {
           headers: {
@@ -91,7 +94,7 @@ const ApprovalRequests: React.FC = () => {
           }
         }
       );
-      
+
       toast.success(`FPO ${action}d successfully!`);
       setShowModal(false);
       setComments('');
@@ -102,6 +105,12 @@ const ApprovalRequests: React.FC = () => {
     } finally {
       setActionLoading(false);
     }
+  };
+
+  const handleViewDocument = (url: string, type: string) => {
+    setSelectedDocUrl(url);
+    setSelectedDocType(type);
+    setShowDocModal(true);
   };
 
   const filteredRequests = requests.filter(request => {
@@ -355,7 +364,7 @@ const ApprovalRequests: React.FC = () => {
                       <p className="font-medium">{selectedRequest.pan}</p>
                       {selectedRequest.pan_doc_url && (
                         <button
-                          onClick={() => window.open(selectedRequest.pan_doc_url, '_blank')}
+                          onClick={() => handleViewDocument(selectedRequest.pan_doc_url!, 'PAN')}
                           className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                           title="View PAN Document"
                         >
@@ -370,7 +379,7 @@ const ApprovalRequests: React.FC = () => {
                       <p className="font-medium">{selectedRequest.tan}</p>
                       {selectedRequest.tan_doc_url && (
                         <button
-                          onClick={() => window.open(selectedRequest.tan_doc_url, '_blank')}
+                          onClick={() => handleViewDocument(selectedRequest.tan_doc_url!, 'TAN')}
                           className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                           title="View TAN Document"
                         >
@@ -385,7 +394,7 @@ const ApprovalRequests: React.FC = () => {
                       <p className="font-medium">{selectedRequest.gst_number}</p>
                       {selectedRequest.gst_number_doc_url && (
                         <button
-                          onClick={() => window.open(selectedRequest.gst_number_doc_url, '_blank')}
+                          onClick={() => handleViewDocument(selectedRequest.gst_number_doc_url!, 'GST')}
                           className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                           title="View GST Document"
                         >
@@ -451,6 +460,30 @@ const ApprovalRequests: React.FC = () => {
                 <CheckCircle className="h-4 w-4" />
                 <span>{actionLoading ? 'Processing...' : 'Approve'}</span>
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Document Viewer Modal */}
+      {showDocModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg max-w-5xl w-full max-h-[95vh] overflow-hidden flex flex-col">
+            <div className="p-4 border-b flex items-center justify-between bg-gray-50">
+              <h3 className="text-lg font-semibold text-gray-900">{selectedDocType} Document</h3>
+              <button
+                onClick={() => setShowDocModal(false)}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <XCircle className="h-6 w-6" />
+              </button>
+            </div>
+            <div className="flex-1 overflow-auto bg-gray-100 flex items-center justify-center p-4">
+              <img
+                src={selectedDocUrl}
+                alt={`${selectedDocType} Document`}
+                className="max-w-full max-h-full object-contain"
+              />
             </div>
           </div>
         </div>
