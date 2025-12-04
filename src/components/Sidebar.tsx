@@ -23,7 +23,12 @@ import {
   LogOut
 } from 'lucide-react';
 
-const Sidebar: React.FC = () => {
+interface SidebarProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const { user, logout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -115,8 +120,8 @@ const Sidebar: React.FC = () => {
       {/* Sidebar */}
       <div
         className={`bg-white w-64 shadow-lg fixed lg:static inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out flex flex-col ${
-          isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
-        }`}
+          isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+        } ${isOpen ? 'lg:translate-x-0' : 'lg:-translate-x-full'}`}
       >
         {/* Close button for mobile */}
         <button
