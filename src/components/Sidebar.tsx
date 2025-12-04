@@ -128,7 +128,17 @@ const Sidebar: React.FC = () => {
         </button>
 
         <div className="flex items-center justify-center h-16 border-b border-gray-200">
-          <h1 className="text-xl font-bold text-gray-800">FPC Management</h1>
+          <img
+            src="/logo.png"
+            alt="Logo"
+            className="h-12 w-auto object-contain"
+            onError={(e) => {
+              e.currentTarget.style.display = 'none';
+              const icon = e.currentTarget.nextElementSibling;
+              if (icon) icon.classList.remove('hidden');
+            }}
+          />
+          <Building2 className="h-8 w-8 text-primary-600 hidden" />
         </div>
 
         <nav className="mt-8 flex-1 overflow-y-auto">
