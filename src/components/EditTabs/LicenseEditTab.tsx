@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import { FileText, Edit, Save, X, Plus } from 'lucide-react';
+import { FileText, Edit, Save, X, Plus, Upload, Eye } from 'lucide-react';
 
 interface LicenseFormData {
   fpo_id: number;
@@ -44,6 +44,7 @@ const LicenseEditTab: React.FC<LicenseEditTabProps> = ({ fpoId }) => {
   const [originalData, setOriginalData] = useState<License | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [licenseFile, setLicenseFile] = useState<File | null>(null);
 
   const { register, handleSubmit, reset, watch, formState: { errors, dirtyFields } } = useForm<LicenseFormData>({
     defaultValues: {
@@ -90,6 +91,7 @@ const LicenseEditTab: React.FC<LicenseEditTabProps> = ({ fpoId }) => {
     setEditingId(null);
     setOriginalData(null);
     setShowAddForm(false);
+    setLicenseFile(null);
     reset({
       fpo_id: fpoId,
       category: 'seed',
@@ -116,39 +118,48 @@ const LicenseEditTab: React.FC<LicenseEditTabProps> = ({ fpoId }) => {
     setIsSubmitting(true);
     try {
       const token = localStorage.getItem('token');
-      data.fpo_id = fpoId;
+
+      const processedData = {
+        ...data,
+        license_date: data.license_date || null,
+        license_expiry: data.license_expiry || null,
+        other_category_name: data.category === 'other' ? data.other_category_name : null,
+        fpo_id: fpoId
+      };
 
       if (showAddForm) {
+        const formData = new FormData();
+        formData.append('license_details', JSON.stringify(processedData));
+        if (licenseFile) {
+          formData.append('license_document', licenseFile);
+        }
+
         await axios.post(
           '/api/licenses/',
-          data,
+          formData,
           {
-            headers: { 'Authorization': `Bearer ${token}` }
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'multipart/form-data'
+            }
           }
         );
         toast.success('License created successfully!');
       } else if (editingId) {
-        const changedFields: Partial<LicenseFormData> = {};
-
-        (Object.keys(dirtyFields) as Array<keyof LicenseFormData>).forEach((key) => {
-          if (dirtyFields[key]) {
-            changedFields[key] = data[key] as any;
-          }
-        });
-
-        if (Object.keys(changedFields).length === 0) {
-          toast('No changes to save');
-          handleCancelEdit();
-          return;
+        const formData = new FormData();
+        formData.append('license_details', JSON.stringify(processedData));
+        if (licenseFile) {
+          formData.append('license_document', licenseFile);
         }
-
-        changedFields.fpo_id = fpoId;
 
         await axios.put(
           `/api/licenses/${editingId}`,
-          changedFields,
+          formData,
           {
-            headers: { 'Authorization': `Bearer ${token}` }
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'multipart/form-data'
+            }
           }
         );
         toast.success('License updated successfully!');
@@ -224,6 +235,74 @@ const LicenseEditTab: React.FC<LicenseEditTabProps> = ({ fpoId }) => {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">License Expiry</label>
           <input type="date" {...register('license_expiry')} className="form-input w-full" />
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">License Document (Image/PDF)</label>
+        <div className="mt-1">
+          <input
+            id="license-upload"
+            type="file"
+            accept="image/*,.pdf"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                if (file.size > 5 * 1024 * 1024) {
+                  toast.error('File size must be less than 5MB');
+                  e.target.value = '';
+                  return;
+                }
+                setLicenseFile(file);
+              }
+            }}
+            className="hidden"
+          />
+          <label
+            htmlFor="license-upload"
+            className="flex items-center justify-center w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-primary-500 hover:bg-gray-50 transition-colors"
+          >
+            <Upload className="h-5 w-5 text-gray-400 mr-2" />
+            <span className="text-sm text-gray-600">
+              {licenseFile ? 'Change Document' : 'Upload License Document'}
+            </span>
+          </label>
+          {licenseFile && (
+            <div className="mt-2 p-3 bg-gray-50 rounded-lg flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <FileText className="h-5 w-5 text-primary-600" />
+                <div>
+                  <p className="text-sm font-medium text-gray-900">{licenseFile.name}</p>
+                  <span className="text-xs text-gray-500">({(licenseFile.size / 1024).toFixed(2)} KB)</span>
+                </div>
+              </div>
+              <div className="flex items-center space-x-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const url = URL.createObjectURL(licenseFile);
+                    window.open(url, '_blank');
+                  }}
+                  className="p-1 hover:bg-gray-200 rounded-full transition-colors"
+                  title="Preview document"
+                >
+                  <Eye className="h-4 w-4 text-blue-600" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLicenseFile(null);
+                    const input = document.getElementById('license-upload') as HTMLInputElement;
+                    if (input) input.value = '';
+                  }}
+                  className="p-1 hover:bg-gray-200 rounded-full transition-colors"
+                  title="Remove document"
+                >
+                  <X className="h-4 w-4 text-gray-600" />
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
